@@ -6,9 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'loggedUser_Screen.dart';
 
-
-
-
 class RegistrationScreen extends StatefulWidget {
 static String id = 'RegistrationScreen';
   @override

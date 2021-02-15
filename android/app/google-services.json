@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "418604047914",
+    "project_id": "reuse-266d7",
+    "storage_bucket": "reuse-266d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418604047914:android:028014fef8c8da774a2d53",
+        "android_client_info": {
+          "package_name": "co.reuseapp.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "418604047914-si48qkr3asov4j55miks3paui1hhfuie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUI827D5QaTavHcLdw6OGZuOn5K59V9ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "418604047914-si48qkr3asov4j55miks3paui1hhfuie.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
