@@ -15,8 +15,8 @@ class RoundedButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.0),
           child: MaterialButton(
             onPressed: onPressed,
-            minWidth: 652.0,
-            height: 48.0,
+            minWidth: 350.0,
+            height: 45.0 ,
             child: Text(
               text,
               style: TextStyle(
