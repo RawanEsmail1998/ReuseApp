@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reuse_app/Login_Screen.dart';
+import 'package:reuse_app/add_item1.dart';
 import 'package:reuse_app/add_item2.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
@@ -21,19 +22,24 @@ class ReuseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<AuthProvider>(
-            create: (_) {
-              return AuthProvider();
-            },
-          )
-        ],
-        child: MaterialApp(initialRoute: HomeScreen.id, routes: {
-          HomeScreen.id: (context) => HomeScreen(),
-          LoginScreen.id: (context) => LoginScreen(),
-          RegistrationScreen.id: (context) => RegistrationScreen(),
-          AddItem.id: (context) => AddItem(),
-          UploadImages.id: (context) => UploadImages(),
-        }));
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) {
+            return AuthProvider();
+          },
+        )
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: AddItem1.id,
+          routes: {
+            HomeScreen.id: (context) => HomeScreen(),
+            LoginScreen.id: (context) => LoginScreen(),
+            RegistrationScreen.id: (context) => RegistrationScreen(),
+            AddItem.id: (context) => AddItem(),
+            UploadImages.id: (context) => UploadImages(),
+            AddItem1.id: (context) => AddItem1(),
+          }),
+    );
   }
 }
