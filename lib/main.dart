@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:reuse_app/Login_Screen.dart';
 import 'package:reuse_app/add_item1.dart';
 import 'package:reuse_app/add_item2.dart';
+import 'package:reuse_app/myaccount.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
 import 'RegistrationScreen.dart';
+import 'item.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'auth_provider.dart';
@@ -31,7 +33,7 @@ class ReuseApp extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: AddItem1.id,
+          initialRoute: HomeScreen.id,
           routes: {
             HomeScreen.id: (context) => HomeScreen(),
             LoginScreen.id: (context) => LoginScreen(),
@@ -39,6 +41,8 @@ class ReuseApp extends StatelessWidget {
             AddItem.id: (context) => AddItem(),
             UploadImages.id: (context) => UploadImages(),
             AddItem1.id: (context) => AddItem1(),
+            Myaccount.id: (context) => Myaccount(),
+            Item.id: (context) => Item(),
           }),
     );
   }

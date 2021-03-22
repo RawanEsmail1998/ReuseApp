@@ -22,119 +22,82 @@ class _AddItem1State extends State<AddItem1> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                            child: Text(
-                              'الصور',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            child: Text(
-                              'التفاصيل',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            child: Text(
-                              'الطريقة',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              new DropdownButton<String>(
-                                items: <String>[
-                                  'جده',
-                                  'الرياض',
-                                  'المدينة',
-                                  'مكة',
-                                  'الطائف',
-                                  'أبها',
-                                  'الدمام',
-                                ].map((String value) {
-                                  return new DropdownMenuItem<String>(
-                                    value: value,
-                                    child: new Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (_) {},
-                              ),
-                              Text(
-                                'تحديد المدينة',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'نوع العرض',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  ListTile(
-                                    leading: Radio(),
-                                    title: const Text('مزاد',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                        )),
-                                  ),
-                                  ListTile(
-                                    leading: Radio(),
-                                    title: const Text('تبرع',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                        )),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                   RoundedButton(
                     onPressed: () {
                       setState(() {});
                     },
                     text: 'التالي',
                     color: Color(0xff4072AF),
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          new DropdownButton<String>(
+                            items: <String>[
+                              'جده',
+                              'الرياض',
+                              'المدينة',
+                              'مكة',
+                              'الطائف',
+                              'أبها',
+                              'الدمام',
+                            ].map((String value) {
+                              return new DropdownMenuItem<String>(
+                                value: value,
+                                child: new Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (_) {},
+                          ),
+                          Text(
+                            'تحديد المدينة',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'نوع العرض',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              ListTile(
+                                leading: Radio(),
+                                title: const Text('مزاد',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    )),
+                              ),
+                              ListTile(
+                                leading: Radio(),
+                                title: const Text('تبرع',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
