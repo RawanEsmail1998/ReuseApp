@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:path/path.dart' as Path;
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Rounded_Button.dart';
@@ -5,6 +8,7 @@ import 'upload_images.dart';
 import 'Home_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage;
 
 class AddItem extends StatefulWidget {
   static String id = 'add_item2';
@@ -13,19 +17,25 @@ class AddItem extends StatefulWidget {
 }
 
 class _AddItemState extends State<AddItem> {
+  bool uploading = false;
+  List<String> _imageUrls = List();
+
+  double val = 0;
+  CollectionReference imgRef;
+  firebase_Storage.Reference ref;
+  List<File> _image = [];
+  String _uploadFileURL;
+  final picker = ImagePicker();
   String nameOfItem, details, price;
   final _text = TextEditingController();
   final _details = TextEditingController();
   final _price = TextEditingController();
   bool _validate = false;
-  final _auth = FirebaseAuth.instance;
   User loggedUser;
   String cityName;
-  String itemtype = 'donateditem';
-
+  int duration;
+  String itemtype = 'مزاد';
   String _uid = FirebaseAuth.instance.currentUser.uid;
-  CollectionReference _donatedItems =
-      FirebaseFirestore.instance.collection('donatedItems');
   CollectionReference _auctionItems =
       FirebaseFirestore.instance.collection('auctionItems');
   void initState() {
@@ -37,25 +47,6 @@ class _AddItemState extends State<AddItem> {
       itemtype = value;
     });
   }
-  // ////////////////this thing always bring errs///////////////////
-  // void getCurrentUser() async {
-  //   try {
-  //     final user = _auth.currentUser;
-  //     if (user != null) {
-  //       loggedUser = user;
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-  // Future<void> doTheUploadToFirebase() async {
-  //   await _users.add({
-  //     'the_NameOfItem': nameOfItem,
-  //     'the_Details': details,
-  //     'the_Price': price,
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -67,218 +58,286 @@ class _AddItemState extends State<AddItem> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          child: Form(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  TextField(
-                    controller: _text,
-                    onChanged: (value) {
-                      setState(() {
-                        nameOfItem = value;
-                      });
-                    },
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'اسم المنتج - العنوان',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1.0)),
-                      errorText: _validate ? 'هذا الحقل مطلوب' : null,
-                      focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.blueAccent, width: 1.0)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: 30.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    new DropdownButton<String>(
+                      value: cityName,
+                      items: <String>[
+                        'جده',
+                        'الرياض',
+                        'المدينة',
+                        'مكة',
+                        'الطائف',
+                        'أبها',
+                        'الدمام',
+                      ].map((String value) {
+                        return new DropdownMenuItem<String>(
+                          value: value,
+                          child: new Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          cityName = value;
+                        });
+                      },
                     ),
-                  ),
-                  SizedBox(height: 16.0),
-                  TextField(
-                    controller: _details,
-                    onChanged: (value) {
-                      setState(() {
-                        details = value;
-                      });
-                    },
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'تفاصيل المنتج',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
+                    Text(
+                      'تحديد المدينة',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1.0)),
-                      contentPadding: EdgeInsets.symmetric(vertical: 80.0),
-                      errorText: _validate ? 'هذا الحقل مطلوب' : null,
                     ),
+                  ],
+                ),
+                TextField(
+                  controller: _text,
+                  onChanged: (value) {
+                    setState(() {
+                      nameOfItem = value;
+                    });
+                  },
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  decoration: InputDecoration(
+                    hintText: 'اسم المنتج - العنوان',
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    enabledBorder:
+                        OutlineInputBorder(borderSide: BorderSide(width: 1.0)),
+                    errorText: _validate ? 'هذا الحقل مطلوب' : null,
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.blueAccent, width: 1.0)),
                   ),
-                  SizedBox(
-                    height: 16.0,
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _details,
+                  onChanged: (value) {
+                    setState(() {
+                      details = value;
+                    });
+                  },
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  decoration: InputDecoration(
+                    hintText: 'تفاصيل المنتج',
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    enabledBorder:
+                        OutlineInputBorder(borderSide: BorderSide(width: 1.0)),
+                    contentPadding: EdgeInsets.symmetric(vertical: 80.0),
+                    errorText: _validate ? 'هذا الحقل مطلوب' : null,
                   ),
-                  //Row(
-                  //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //children: [
-                  // Flexible(
-                  // child: Align(
-                  //  alignment: Alignment.topRight,
-                  //child: Container(
-                  //  width: 150.0,
-                  //  child: TextField(
-                  //   controller: _price,
-                  //    onChanged: (value) {
-                  //    setState(() {
-                  //   price = value;
-                  //    });
-                  //   },
-                  //  keyboardType: TextInputType.number,
-                  //  inputFormatters: [
-                  //    FilteringTextInputFormatter.digitsOnly
-                  // ],
-                  // only number can be entered.
-                  //  decoration: InputDecoration(
-                  //   enabledBorder: OutlineInputBorder(
-                  //     borderSide: BorderSide(width: 1.0)),
-                  //    contentPadding:
-                  //     EdgeInsets.symmetric(horizontal: 30.0),
-                  //    errorText: _validate ? 'هذا الحقل مطلوب' : null,
-                  //    ),
-                  //  ),
-                  // ),
-                  //  ),),
-                  //Flexible(
-                  //  child: Text(
-                  //   'ادخل المبلغ المطلوب',
-                  //   textAlign: TextAlign.right,
-                  //      textDirection: TextDirection.ltr,
-                  //    ),
-                  //   ),
-                  //  ],
-                  //  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      new DropdownButton<String>(
-                        value: cityName,
-                        items: <String>[
-                          'جده',
-                          'الرياض',
-                          'المدينة',
-                          'مكة',
-                          'الطائف',
-                          'أبها',
-                          'الدمام',
-                        ].map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            cityName = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        'تحديد المدينة',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'نوع العرض',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          ListTile(
-                            leading: Radio(
-                                onChanged: (value) {
-                                  OnTypeChanged(value);
-                                },
-                                groupValue: itemtype,
-                                value: 'auctionitem'),
-                            title: const Text('مزاد',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                )),
-                          ),
-                          ListTile(
-                            leading: Radio(
-                              groupValue: itemtype,
-                              value: 'donateditem',
-                              onChanged: (value) {
-                                OnTypeChanged(value);
-                              },
-                            ),
-                            title: const Text('تبرع',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                )),
-                          ),
-                          RoundedButton(
-                            onPressed: () {
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Flexible(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Container(
+                          width: 150.0,
+                          child: TextField(
+                            controller: _price,
+                            onChanged: (value) {
                               setState(() {
-                                (_text.text.isEmpty &&
-                                        _details.text.isEmpty &&
-                                        _price.text.isEmpty)
-                                    ? _validate = true
-                                    : _validate = false;
-                                if (_validate != true) {
-                                  // go to tne next activity
-                                  if (itemtype == 'donateditem') {
-                                    _donatedItems.add({
-                                      'type': itemtype,
-                                      'uid': _uid,
-                                      'city': cityName,
-                                    });
-                                  }
-                                  if (itemtype == 'auctionitem') {
-                                    _auctionItems.add({
-                                      'type': itemtype,
-                                      'uid': _uid,
-                                      'city': cityName,
-                                      'price': price
-                                    });
-                                  }
-                                  Navigator.pushNamed(context, UploadImages.id);
-                                }
+                                price = value;
                               });
                             },
-                            text: 'التالي',
-                            color: Color(0xff4072AF),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            // only number can be entered.
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 1.0)),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 30.0),
+                              errorText: _validate ? 'هذا الحقل مطلوب' : null,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        'ادخل المبلغ المطلوب',
+                        textAlign: TextAlign.right,
+                        textDirection: TextDirection.ltr,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    new DropdownButton(
+                      value: duration,
+                      elevation: 16,
+                      items: <DropdownMenuItem<int>>[
+                        new DropdownMenuItem(child: Text('10'), value: 10),
+                        new DropdownMenuItem(child: Text('15'), value: 15),
+                        new DropdownMenuItem(child: Text('30'), value: 30),
+                      ],
+                      onChanged: (int value) {
+                        setState(() {
+                          duration = value;
+                        });
+                      },
+                    ),
+                    Text(
+                      'حدد المدة الزمنية',
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Stack(
+                  children: [
+                    GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: _image.length + 1,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3),
+                      itemBuilder: (context, index) {
+                        return index == 0
+                            ? Center(
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.add_a_photo,
+                                    color: Color(0xff4072AF),
+                                  ),
+                                  iconSize: 50.0,
+                                  onPressed: () {
+                                    chooseImage();
+                                  },
+                                ),
+                              )
+                            : Container(
+                                margin: EdgeInsets.all(3.0),
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: FileImage(_image[index - 1]),
+                                        fit: BoxFit.cover)),
+                              );
+                      },
+                    ),
+                    uploading
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(
+                                  value: val,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.teal),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Container(),
+                  ],
+                ),
+                RoundedButton(
+                  onPressed: () {
+                    setState(() {
+                      uploading = true;
+                      (_text.text.isEmpty ||
+                              _price.text.isEmpty ||
+                              _details.text.isEmpty)
+                          ? _validate = true
+                          : _validate = false;
+                    });
+                    uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
+
+                  },
+                  text: 'التالي',
+                  color: Color(0xff4072AF),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  chooseImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _image.add(File(pickedFile?.path));
+    });
+    if (pickedFile.path == null) retrieveLostData();
+  }
+
+  Future<void> retrieveLostData() async {
+    final LostData response = await picker.getLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    if (response != null) {
+      setState(() {
+        _image.add(File(response.file.path));
+      });
+    } else {
+      print(response.file);
+    }
+  }
+
+  Future uploadFile() async {
+    int i = 1;
+    for (var img in _image) {
+      setState(() {
+        val = i / _image.length;
+      });
+      ref = firebase_Storage.FirebaseStorage.instance
+          .ref()
+          .child('images/${Path.basename(img.path)}');
+      await ref.putFile(img).whenComplete(() async {
+        String imageUrl =   await ref.getDownloadURL();
+        setState(() {
+          _imageUrls.add(imageUrl);
+        });
+
+
+
+          i++;
+        });
+
+    }
+    if (_validate != true) {
+      _auctionItems.add({
+        'type': itemtype,
+        'uid': _uid,
+        'city': cityName,
+        'price': price,
+        'duration': duration,
+        'name': nameOfItem,
+        'details': details,
+        'url': _imageUrls ,
+        'createdOn' : Timestamp.now(),
+      });
+    }
   }
 }

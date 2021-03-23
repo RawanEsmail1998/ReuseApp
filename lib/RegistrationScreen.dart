@@ -59,7 +59,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       textAlign: TextAlign.right,
       showCursor: true,
       keyboardType: TextInputType.emailAddress,
-      //validator:(value) => emailValid(value)? 'الرجاء ادخال بريد صالح' : null ,
+      validator:(value) => emailValid(value)?  null : 'الرجاء ادخال بريد صالح',
       onSaved: (value) => email = value,
     );
 

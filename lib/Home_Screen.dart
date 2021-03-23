@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 import 'package:reuse_app/add_item2.dart';
 import 'Data_Search.dart';
+import 'add_item1.dart';
 import 'auth_provider.dart';
 import 'Login_Screen.dart';
 import 'Menu.dart';
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       // add item.
                       // go to the next screen.
-                      Navigator.pushNamed(context, AddItem.id);
+                      Navigator.pushNamed(context, AddItem1.id);
                     },
                     backgroundColor: Color(0xff4072AF),
                 ),

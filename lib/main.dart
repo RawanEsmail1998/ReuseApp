@@ -7,6 +7,7 @@ import 'package:reuse_app/myaccount.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
 import 'RegistrationScreen.dart';
+import 'donatedItem.dart';
 import 'item.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -38,9 +39,12 @@ class ReuseApp extends StatelessWidget {
             HomeScreen.id: (context) => HomeScreen(),
             LoginScreen.id: (context) => LoginScreen(),
             RegistrationScreen.id: (context) => RegistrationScreen(),
+            AddItem1.id: (context) => AddItem1(),
             AddItem.id: (context) => AddItem(),
             UploadImages.id: (context) => UploadImages(),
-            AddItem1.id: (context) => AddItem1(),
+            DonatedItem.id:(context) => DonatedItem(),
+            UploadImages.id: (context) => UploadImages(),
+
             Myaccount.id: (context) => Myaccount(),
             Item.id: (context) => Item(),
           }),

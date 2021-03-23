@@ -8,16 +8,21 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage;
 import 'package:path/path.dart' as Path;
 class UploadImages extends StatefulWidget {
   static String id = 'upload_images' ;
+  final String uid ;
+  UploadImages({this.uid});
   @override
-  _UploadImagesState createState() => _UploadImagesState();
+  _UploadImagesState createState() => _UploadImagesState(this.uid);
 }
 
 class _UploadImagesState extends State<UploadImages> {
+   _UploadImagesState(this.uid);
+  String uid ;
   bool uploading = false ;
   double val = 0 ;
   CollectionReference imgRef ;
   firebase_Storage.Reference ref ;
   List<File> _image = [] ;
+  String _uploadFileURL ;
   final picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
@@ -122,8 +127,9 @@ class _UploadImagesState extends State<UploadImages> {
           .ref()
           .child('images/${Path.basename(img.path)}');
       await ref.putFile(img).whenComplete(() async {
-        await ref.getDownloadURL().then((value) {
-          imgRef.add({"url":value});
+         await ref.getDownloadURL().then((value) {
+           _uploadFileURL = value ;
+          imgRef.doc(this.uid).set({"url":value}, SetOptions(merge: true));
           i++ ;
         });
       });
@@ -133,6 +139,6 @@ class _UploadImagesState extends State<UploadImages> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    imgRef = FirebaseFirestore.instance.collection('imageURLs') ;
+    imgRef = FirebaseFirestore.instance.collection('auctionItems')  ;
   }
 }
