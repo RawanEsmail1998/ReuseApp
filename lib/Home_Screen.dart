@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 import 'package:reuse_app/add_item2.dart';
+import 'package:reuse_app/item_notifier.dart';
 import 'Data_Search.dart';
 import 'add_item1.dart';
 import 'auth_provider.dart';
@@ -15,29 +17,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _auth = FirebaseAuth.instance;
   AuthProvider authProvider;
+  List<String> collection = ['auctionItems','donatedItems'];
   User loggedUser;
   void initState() {
+    ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen:false);
+    getItem(itemNotifier);
     super.initState();
-    getCurrentUser();
+
+
   }
 
-  getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      loggedUser = user;
-    } catch (e) {
-      print(e.toString());
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context);
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Center(
           child: Text('Reuse'),
@@ -130,7 +126,100 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      drawerEnableOpenDragGesture: false,
+      body: Scrollbar(
+        thickness: 3,
+        child: SingleChildScrollView(
+                 child: Padding(
+                   padding:  EdgeInsets.symmetric(horizontal: 10.0),
+                   child: Column(
+                     children: [
+                       GridView.builder(
+                         shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                        physics: BouncingScrollPhysics(),
+                        itemCount: itemNotifier.itemList.length,
+                        itemBuilder: (BuildContext context , int index){
+                          return Card(
+                            elevation: 0.2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: InkWell(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: Image.network(itemNotifier.itemList[index].image[0], fit: BoxFit.cover,),
+                                  ),
+
+                                  SizedBox(height: 16.0,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.favorite_border_sharp),
+                                        onPressed: (){
+
+                                        },
+                                      ),
+                                      SizedBox(width: 10.0,),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8),
+                                        child: Text(itemNotifier.itemList[index].name,style: TextStyle(fontWeight: FontWeight.bold), textDirection: TextDirection.rtl,),
+                                      ),
+
+
+
+                                    ],
+                                  ),
+                                  SizedBox(height: 10.0,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(5.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                                          color: Colors.red.shade600 ,
+                                        ),
+
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Icon(Icons.location_on_rounded,color: Colors.white,),
+
+                                            Text(
+                                              itemNotifier.itemList[index].city,
+                                              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8),
+                                        child: Text(itemNotifier.itemList[index].type, textDirection: TextDirection.rtl,),
+                                      ),
+
+                                    ],
+                                  ),
+                                  SizedBox(height: 10.0,),
+                                ],
+                              ),
+                              onTap: (){
+
+                              },
+                            ),
+                          );
+                        },
+                ),
+                     ],
+                   ),
+                 ),
+        ),
+      ),
+
       floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -152,6 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ],
         ),
+
+
       );
   }
 }

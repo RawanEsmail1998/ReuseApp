@@ -335,7 +335,7 @@ class _AddItemState extends State<AddItem> {
         'duration': duration,
         'name': nameOfItem,
         'details': details,
-        'url': _imageUrls ,
+        'imageUrl': _imageUrls ,
         'createdOn' : Timestamp.now(),
       });
     }

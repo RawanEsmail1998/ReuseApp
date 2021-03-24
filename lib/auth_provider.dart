@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:reuse_app/item_notifier.dart';
+import 'items.dart';
+
+import 'item.dart';
 class AuthProvider with ChangeNotifier {
   User user ;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -60,4 +65,19 @@ class AuthProvider with ChangeNotifier {
   void signOut() {
     FirebaseAuth.instance.signOut();
   }
+}
+getItem(ItemNotifier itemNotifier) async{
+ QuerySnapshot snapshot =  await FirebaseFirestore.instance.collection('auctionItems').get();
+ QuerySnapshot snapshot2 =  await FirebaseFirestore.instance.collection('donatedItems').get();
+List<Items> _itemList = [];
+snapshot.docs.forEach((document) {
+Items item = Items.fromMap(document.data());
+_itemList.add(item);
+itemNotifier.itemList = _itemList ;
+});
+snapshot2.docs.forEach((document) {
+  Items item = Items.fromMap(document.data());
+  _itemList.add(item);
+  itemNotifier.itemList = _itemList ;
+});
 }

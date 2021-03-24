@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:reuse_app/Login_Screen.dart';
 import 'package:reuse_app/add_item1.dart';
 import 'package:reuse_app/add_item2.dart';
+import 'package:reuse_app/item_notifier.dart';
 import 'package:reuse_app/myaccount.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
@@ -30,21 +31,24 @@ class ReuseApp extends StatelessWidget {
           create: (_) {
             return AuthProvider();
           },
+        ),
+        ChangeNotifierProvider<ItemNotifier>(
+          create: (_) {
+            return ItemNotifier();
+          },
         )
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           initialRoute: HomeScreen.id,
           routes: {
-            HomeScreen.id: (context) => HomeScreen(),
             LoginScreen.id: (context) => LoginScreen(),
             RegistrationScreen.id: (context) => RegistrationScreen(),
             AddItem1.id: (context) => AddItem1(),
             AddItem.id: (context) => AddItem(),
-            UploadImages.id: (context) => UploadImages(),
             DonatedItem.id:(context) => DonatedItem(),
             UploadImages.id: (context) => UploadImages(),
-
+            HomeScreen.id: (context) => HomeScreen(),
             Myaccount.id: (context) => Myaccount(),
             Item.id: (context) => Item(),
           }),

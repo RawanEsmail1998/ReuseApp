@@ -186,7 +186,7 @@ class _DonatedItemState extends State<DonatedItem> {
                             : _validate = false;
 
                       });
-                    uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id ));
+                    uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
 
                     },
                     text: 'التالي',
