@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'items.dart';
 class ItemNotifier with ChangeNotifier {
@@ -11,8 +12,10 @@ class ItemNotifier with ChangeNotifier {
     _itemList = itemList;
     notifyListeners();
   }
-  set currentItem(Items item){
+
+  set currentItem(Items item ){
     _currentItem = item;
     notifyListeners();
   }
+
 }

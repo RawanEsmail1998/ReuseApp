@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
 import 'package:reuse_app/add_item2.dart';
+import 'package:reuse_app/detailsScreen.dart';
 import 'package:reuse_app/item_notifier.dart';
 import 'Data_Search.dart';
 import 'add_item1.dart';
@@ -208,7 +209,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                               onTap: (){
-
+                                itemNotifier.currentItem = itemNotifier.itemList[index] ;
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (BuildContext context){
+                                    return DetailScreen();
+                                  })
+                                );
                               },
                             ),
                           );

@@ -6,9 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:reuse_app/item_notifier.dart';
 import 'items.dart';
 
-import 'item.dart';
+import 'detailsScreen.dart';
 class AuthProvider with ChangeNotifier {
   User user ;
+  var path ;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   StreamSubscription userAuthSub ;
   AuthProvider(){
@@ -65,19 +66,31 @@ class AuthProvider with ChangeNotifier {
   void signOut() {
     FirebaseAuth.instance.signOut();
   }
+  auctioneer() async {
+    CollectionReference item = await FirebaseFirestore.instance.collection('auctionItems');
+
+  }
 }
 getItem(ItemNotifier itemNotifier) async{
  QuerySnapshot snapshot =  await FirebaseFirestore.instance.collection('auctionItems').get();
  QuerySnapshot snapshot2 =  await FirebaseFirestore.instance.collection('donatedItems').get();
 List<Items> _itemList = [];
+List<String> _itemPath = [];
 snapshot.docs.forEach((document) {
+  var path = document.reference.path;
 Items item = Items.fromMap(document.data());
 _itemList.add(item);
 itemNotifier.itemList = _itemList ;
+
 });
 snapshot2.docs.forEach((document) {
+
   Items item = Items.fromMap(document.data());
+ // _itemList.insert(path, item);
   _itemList.add(item);
   itemNotifier.itemList = _itemList ;
+
+
 });
+
 }

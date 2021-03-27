@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:reuse_app/Home_Screen.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage;
 import 'package:path/path.dart' as Path;
+import 'package:uuid/uuid.dart';
 import 'Rounded_Button.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -30,6 +31,7 @@ class _DonatedItemState extends State<DonatedItem> {
   firebase_Storage.Reference ref ;
   List<File> _image = [] ;
   final picker = ImagePicker();
+  var uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +246,7 @@ class _DonatedItemState extends State<DonatedItem> {
 
     }
     if (_validate != true) {
+      var v4 = uuid.v4() ;
       _donatedItems.doc().set({
         'type': 'تبرع',
         'uid': _uid,
@@ -252,6 +255,7 @@ class _DonatedItemState extends State<DonatedItem> {
         'details': details,
         'imageUrl': _imageUrls ,
         'createdOn' : Timestamp.now(),
+        'documentId' : v4,
       });
     }
   }

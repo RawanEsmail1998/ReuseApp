@@ -9,7 +9,7 @@ import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
 import 'RegistrationScreen.dart';
 import 'donatedItem.dart';
-import 'item.dart';
+import 'detailsScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'auth_provider.dart';
@@ -50,7 +50,7 @@ class ReuseApp extends StatelessWidget {
             UploadImages.id: (context) => UploadImages(),
             HomeScreen.id: (context) => HomeScreen(),
             Myaccount.id: (context) => Myaccount(),
-            Item.id: (context) => Item(),
+            DetailScreen.id: (context) => DetailScreen(),
           }),
     );
   }

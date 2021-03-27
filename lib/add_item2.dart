@@ -4,12 +4,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Rounded_Button.dart';
-import 'upload_images.dart';
+import 'items.dart';
 import 'Home_Screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage;
-
+import 'package:uuid/uuid.dart' ;
+import 'package:uuid/uuid_util.dart';
 class AddItem extends StatefulWidget {
   static String id = 'add_item2';
   @override
@@ -19,12 +20,12 @@ class AddItem extends StatefulWidget {
 class _AddItemState extends State<AddItem> {
   bool uploading = false;
   List<String> _imageUrls = List();
-
+  Items id ;
   double val = 0;
   CollectionReference imgRef;
   firebase_Storage.Reference ref;
   List<File> _image = [];
-  String _uploadFileURL;
+
   final picker = ImagePicker();
   String nameOfItem, details, price;
   final _text = TextEditingController();
@@ -36,8 +37,8 @@ class _AddItemState extends State<AddItem> {
   int duration;
   String itemtype = 'مزاد';
   String _uid = FirebaseAuth.instance.currentUser.uid;
-  CollectionReference _auctionItems =
-      FirebaseFirestore.instance.collection('auctionItems');
+  CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
+  var uuid = Uuid();
   void initState() {
     super.initState();
   }
@@ -50,6 +51,7 @@ class _AddItemState extends State<AddItem> {
 
   @override
   Widget build(BuildContext context) {
+    var v4 = uuid.v4 ;
     return Scaffold(
       backgroundColor: Color(0xffF7F7F7),
       appBar: AppBar(
@@ -327,7 +329,8 @@ class _AddItemState extends State<AddItem> {
 
     }
     if (_validate != true) {
-      _auctionItems.add({
+      var v4 = uuid.v4() ;
+     _auctionItems.doc(v4).set({
         'type': itemtype,
         'uid': _uid,
         'city': cityName,
@@ -337,7 +340,9 @@ class _AddItemState extends State<AddItem> {
         'details': details,
         'imageUrl': _imageUrls ,
         'createdOn' : Timestamp.now(),
+       'documentId' : v4,
       });
+
     }
   }
 }

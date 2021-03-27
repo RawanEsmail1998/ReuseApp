@@ -5,13 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Database {
   CollectionReference userAccount =
       FirebaseFirestore.instance.collection('users');
-  Future<void> userSetup(
-      String name, String Phone, String city, String email) async {
+  Future<void> userSetup(String name, String phone, String city, String email) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser.uid.toString();
     await userAccount.doc(uid).set({
       'Full_Name': name,
-      'Phone_Number': Phone,
+      'Phone_Number': phone,
       'City': city,
       'uid': uid,
       'email': email,
