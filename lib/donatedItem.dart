@@ -247,7 +247,7 @@ class _DonatedItemState extends State<DonatedItem> {
     }
     if (_validate != true) {
       var v4 = uuid.v4() ;
-      _donatedItems.doc().set({
+      _donatedItems.doc(v4).set({
         'type': 'تبرع',
         'uid': _uid,
         'city': cityName,
