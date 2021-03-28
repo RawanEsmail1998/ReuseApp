@@ -33,8 +33,8 @@ class _AddItemState extends State<AddItem> {
   final _price = TextEditingController();
   bool _validate = false;
   User loggedUser;
-  String cityName;
-  int duration;
+  String cityName = "الرياض" ;
+  int duration = 10;
   String itemtype = 'مزاد';
   String _uid = FirebaseAuth.instance.currentUser.uid;
   CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
@@ -76,7 +76,7 @@ class _AddItemState extends State<AddItem> {
                     new DropdownButton<String>(
                       value: cityName,
                       items: <String>[
-                        'جده',
+                        'جدة',
                         'الرياض',
                         'المدينة',
                         'مكة',
@@ -206,6 +206,7 @@ class _AddItemState extends State<AddItem> {
                           duration = value;
                         });
                       },
+
                     ),
                     Text(
                       'حدد المدة الزمنية',
@@ -265,13 +266,17 @@ class _AddItemState extends State<AddItem> {
                   onPressed: () {
                     setState(() {
                       uploading = true;
-                      (_text.text.isEmpty ||
-                              _price.text.isEmpty ||
+                      (_text.text.isEmpty &&
+                              _price.text.isEmpty &&
                               _details.text.isEmpty)
                           ? _validate = true
                           : _validate = false;
+                      if(_image.isNotEmpty){
+                        uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
+                      }
                     });
-                    uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
+
+
 
                   },
                   text: 'التالي',
@@ -328,7 +333,7 @@ class _AddItemState extends State<AddItem> {
         });
 
     }
-    if (_validate != true) {
+    if (_validate != true && _image.isNotEmpty) {
       var v4 = uuid.v4() ;
      _auctionItems.doc(v4).set({
         'type': itemtype,

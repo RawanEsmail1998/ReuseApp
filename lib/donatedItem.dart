@@ -21,7 +21,7 @@ class _DonatedItemState extends State<DonatedItem> {
   final _details = TextEditingController();
   bool _validate = false;
   List<String> _imageUrls = List();
-  String cityName;
+  String cityName = "الرياض" ;
   String _uid = FirebaseAuth.instance.currentUser.uid;
   CollectionReference _donatedItems =
       FirebaseFirestore.instance.collection('donatedItems');
@@ -186,9 +186,10 @@ class _DonatedItemState extends State<DonatedItem> {
                             _details.text.isEmpty)
                             ? _validate = true
                             : _validate = false;
-
+                        if(_image.isNotEmpty){
+                          uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
+                        }
                       });
-                    uploadFile().whenComplete(() => Navigator.pushNamed(context, HomeScreen.id));
 
                     },
                     text: 'التالي',
