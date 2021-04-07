@@ -7,6 +7,7 @@ import 'chatScreen.dart';
 
 class Allmessages extends StatefulWidget {
   var senderId;
+  String makeitwork;
   static String id = 'Allmessages';
   @override
   _AllmessagesState createState() => _AllmessagesState();
