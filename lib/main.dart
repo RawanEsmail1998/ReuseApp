@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'myproducts.dart';
 import 'chatScreen.dart';
 import 'auth_provider.dart';
+import 'allmessages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +55,7 @@ class ReuseApp extends StatelessWidget {
             DetailScreen.id: (context) => DetailScreen(),
             RequestsPage.id: (context) => RequestsPage(),
             ChatScreen.id: (context) => ChatScreen(),
+            Allmessages.id: (context) => Allmessages(),
           }),
     );
   }

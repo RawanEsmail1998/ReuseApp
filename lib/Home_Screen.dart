@@ -9,6 +9,7 @@ import 'add_item1.dart';
 import 'auth_provider.dart';
 import 'Login_Screen.dart';
 import 'Menu.dart';
+import 'allmessages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'myproducts.dart';
 import 'RegistrationScreen.dart';
@@ -91,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.mail_sharp,
                     text: 'الرسائل',
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, Allmessages.id);
                     },
                   ),
                   ListWidget(
