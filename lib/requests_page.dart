@@ -111,10 +111,9 @@ class _RequestsPageState extends State<RequestsPage> {
                                               //     });
                                               //   } else {
                                               //     setState(() {
-                                              //       docId = documentId(
-                                              //           FirebaseAuth.instance
-                                              //               .currentUser.uid,
 
+                                              // })
+                                              );
                                       if (convExist) {
                                         Navigator.push(
                                             context,
