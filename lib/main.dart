@@ -7,6 +7,7 @@ import 'package:reuse_app/item_notifier.dart';
 import 'package:reuse_app/requests_page.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
+import 'requests_page.dart';
 import 'RegistrationScreen.dart';
 import 'donatedItem.dart';
 import 'detailsScreen.dart';
@@ -56,6 +57,7 @@ class ReuseApp extends StatelessWidget {
             RequestsPage.id: (context) => RequestsPage(),
             ChatScreen.id: (context) => ChatScreen(),
             Allmessages.id: (context) => Allmessages(),
+            RequestsPage.id: (context) => RequestsPage(),
           }),
     );
   }

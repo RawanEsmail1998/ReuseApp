@@ -7,7 +7,6 @@ import 'chatScreen.dart';
 
 class Allmessages extends StatefulWidget {
   var senderId;
-  String makeitwork;
   static String id = 'Allmessages';
   @override
   _AllmessagesState createState() => _AllmessagesState();
@@ -18,7 +17,8 @@ class _AllmessagesState extends State<Allmessages> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
   String _uid = FirebaseAuth.instance.currentUser.uid;
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  Stream users = FirebaseFirestore.instance.collection('users').snapshots();
+
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -28,32 +28,34 @@ class _AllmessagesState extends State<Allmessages> {
             backgroundColor: Colors.blue,
           ),
           body: StreamBuilder<QuerySnapshot>(
-              stream: _firestore.collection('messages').snapshots(),
+              stream: _firestore
+                  .collection('messages')
+                  .where('allUsers', arrayContains: _uid)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (context, index) {
                         DocumentSnapshot document = snapshot.data.docs[index];
-                        final thesender = document.data()['sender'];
-                        final thereceiver = document.data()['receiver'];
-                        if (thereceiver == _uid) {
-                          return Container(
-                              width: 400,
-                              height: 120,
-                              padding: const EdgeInsets.all(5.0),
-                              margin: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(7),
-                                  color: Colors.teal[100],
-                                  border: Border.all(
-                                    width: 0.5,
-                                    color: Colors.blueGrey,
-                                  )),
-                              child: Column(children: [Text('')]));
-                        }
-                        return SizedBox();
+                        String theSender = document.data()['sender'];
+                        String theReceiver = document.data()['receiver'];
+                        String lastMessage = document.data()['lastmessage'];
+                        String docId = document.id;
+
+                        return ListTile(
+                          title: Text(theSender),
+                          trailing: Text(lastMessage),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                          docId: docId,
+                                          receiverId: theReceiver,
+                                        )));
+                          },
+                        );
                       });
                 } else
                   return SizedBox();
