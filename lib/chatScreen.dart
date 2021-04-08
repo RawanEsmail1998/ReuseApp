@@ -121,30 +121,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     },
                   ));
-                  // final messages = snapshot.data.docs.reversed;
-                  // List<MessageBubble> messageBubbles = [];
-                  // for (var message in messages) {
-                  //   final messageText = message.data()['content'];
-                  //   final messageSender = message.data()['fromId'];
-                  //   final messageReceiver = message.data()['toId'];
-                  //   final currentUser = messageReceiver;
-                  //
-                  //   final messageBubble = MessageBubble(
-                  //     sender: messageSender,
-                  //     text: messageText,
-                  //     isMe: currentUser == messageSender,
-                  //   );
-                  //
-                  //   messageBubbles.add(messageBubble);
-                  // }
-                  // return Expanded(
-                  //   child: ListView(
-                  //     reverse: true,
-                  //     padding: EdgeInsets.symmetric(
-                  //         horizontal: 10.0, vertical: 20.0),
-                  //     children: messageBubbles,
-                  //   ),
-                  // );
                 },
               ),
               Container(
