@@ -107,10 +107,8 @@ class _RequestsPageState extends State<RequestsPage> {
                                               //
                                               //   if (convExist == true) {
                                               //     setState(() {
-                                              //       docId = element.id;
+
                                               //     });
-                                              //   } else {
-                                              //     setState(() {
 
                                               // })
                                               );
