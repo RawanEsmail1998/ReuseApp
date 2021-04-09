@@ -34,6 +34,7 @@ class _AddItemState extends State<AddItem> {
   bool _validate = false;
   User loggedUser;
   String cityName = "الرياض" ;
+  String category = "اثاث منزل" ;
   int duration = 10;
   String itemtype = 'مزاد';
   String _uid = FirebaseAuth.instance.currentUser.uid;
@@ -216,6 +217,30 @@ class _AddItemState extends State<AddItem> {
                   ],
                 ),
                 SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    new DropdownButton(
+                      value: category,
+                      elevation: 16,
+                      items:<DropdownMenuItem<String>> [
+                        new DropdownMenuItem(child:Text('اثاث منزل') , value: 'اثاث منزل',),
+                        new DropdownMenuItem(child:Text('اجهزة') , value: 'اجهزة',),
+                        new DropdownMenuItem(child:Text('اغراض مطبخ') , value: 'اغراض مطبخ',)
+                      ],
+                      onChanged: (String value){
+                        setState(() {
+                          category = value;
+                        });
+                      },
+                    ),
+                    Text(
+                      'حدد فئة المنتج',
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
                 Stack(
                   children: [
                     GridView.builder(
@@ -343,6 +368,7 @@ class _AddItemState extends State<AddItem> {
         'duration': duration,
         'name': nameOfItem,
         'details': details,
+         'category':category,
         'imageUrl': _imageUrls ,
         'createdOn' : Timestamp.now(),
        'documentId' : v4,

@@ -22,6 +22,7 @@ class _DonatedItemState extends State<DonatedItem> {
   bool _validate = false;
   List<String> _imageUrls = List();
   String cityName = "الرياض" ;
+  String category = "اثاث منزل" ;
   String _uid = FirebaseAuth.instance.currentUser.uid;
   CollectionReference _donatedItems =
       FirebaseFirestore.instance.collection('donatedItems');
@@ -132,6 +133,30 @@ class _DonatedItemState extends State<DonatedItem> {
                     ),
                   ),
                   SizedBox(height: 16.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      new DropdownButton(
+                        value: category,
+                        elevation: 16,
+                        items:<DropdownMenuItem<String>> [
+                          new DropdownMenuItem(child:Text('اثاث منزل') , value: 'اثاث منزل',),
+                          new DropdownMenuItem(child:Text('اجهزة') , value: 'اجهزة',),
+                          new DropdownMenuItem(child:Text('اغراض مطبخ') , value: 'اغراض مطبخ',)
+                        ],
+                        onChanged: (String value){
+                          setState(() {
+                            category = value;
+                          });
+                        },
+                      ),
+                      Text(
+                        'حدد فئة المنتج',
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
+                  ),
                   Stack(
                     children: [
                       GridView.builder(
@@ -255,6 +280,7 @@ class _DonatedItemState extends State<DonatedItem> {
         'name' : nameOfItem,
         'details': details,
         'imageUrl': _imageUrls ,
+        'category':category,
         'createdOn' : Timestamp.now(),
         'documentId' : v4,
       });

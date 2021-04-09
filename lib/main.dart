@@ -7,10 +7,18 @@ import 'package:reuse_app/item_notifier.dart';
 import 'package:reuse_app/myaccount.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
+import 'package:reuse_app/requests_page.dart';
+import 'package:reuse_app/upload_images.dart';
+import 'Home_Screen.dart';
+import 'requests_page.dart';
 import 'RegistrationScreen.dart';
 import 'donatedItem.dart';
 import 'detailsScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'myproducts.dart';
+import 'chatScreen.dart';
+import 'auth_provider.dart';
+import 'allmessages.dart';
 
 import 'auth_provider.dart';
 
@@ -46,11 +54,14 @@ class ReuseApp extends StatelessWidget {
             RegistrationScreen.id: (context) => RegistrationScreen(),
             AddItem1.id: (context) => AddItem1(),
             AddItem.id: (context) => AddItem(),
-            DonatedItem.id:(context) => DonatedItem(),
+            DonatedItem.id: (context) => DonatedItem(),
             UploadImages.id: (context) => UploadImages(),
             HomeScreen.id: (context) => HomeScreen(),
-            Myaccount.id: (context) => Myaccount(),
+            MyProducts.id: (context) => MyProducts(),
+            RequestsPage.id: (context) => RequestsPage(),
             DetailScreen.id: (context) => DetailScreen(),
+            ChatScreen.id: (context) => ChatScreen(),
+            Allmessages.id: (context) => Allmessages(),
           }),
     );
   }

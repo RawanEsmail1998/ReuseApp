@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,27 +16,69 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   List image;
   String price ;
+   var a , minPrice;
+   var pricePar ;
+   String error;
+  final _formKey = GlobalKey<FormState>();
   CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
-   final useId =  FirebaseAuth.instance.currentUser.uid;
-  CollectionReference _donatedItems =
-  FirebaseFirestore.instance.collection('donatedItems');
-   String docId ;
 
-  Future<void> createSubCollectionForAucthion(){
-    _auctionItems.doc(docId).collection('auctioneer').add({
-      'price': price,
-      'userId' :  useId,
+  CollectionReference _donatedItems =
+      FirebaseFirestore.instance.collection('donatedItems');
+  String docId;
+
+  Future<void> createSubCollectionForAucthion() {
+    final useId = FirebaseAuth.instance.currentUser.uid;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(useId)
+        .get()
+        .then((value) {
+      _auctionItems.doc(docId).collection('auctioneer').add({
+        'price': price,
+        'userId': useId,
+        'name': value.data()['Full_Name'],
+        'city': value.data()['City'],
+      });
     });
   }
-  Future<void> createSubCollectionForDonating(){
-    _donatedItems.doc(docId).collection('requests').add({
-      'userId' :  useId,
+
+  // اضافة ريكويست
+  Future<void> createSubCollectionForDonating() async {
+    final useId = FirebaseAuth.instance.currentUser.uid;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(useId)
+        .get()
+        .then((value) {
+      print(value.data()['Full_Name']);
+      _donatedItems.doc(docId).collection('requests').add({
+        'userId': useId,
+        'name': value.data()['Full_Name'],
+        'city': value.data()['City'],
+      });
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    ItemNotifier itemNotifier =
-        Provider.of<ItemNotifier>(context, listen: false);
+    ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen: false);
+     minPrice = int.parse(itemNotifier.currentItem.price);
+
+    String validatePrice(String value)  {
+
+      if (value.isNotEmpty) {
+        a = int.parse(value);
+        if(a < minPrice){
+          return 'يجب أن لايقل المبلغ عن الحد الادني' ;
+        }else{
+          return null ;
+        }
+      }else{
+        return 'الرجاء ادخال رقم' ;
+      }
+
+    }
+
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
@@ -53,7 +94,55 @@ class _DetailScreenState extends State<DetailScreen> {
         return 'ارسل طلب';
       }
     }
+    _showDialog() async{
 
+      await showDialog<String>(
+        context: context,
+        child: _SystemPadding(child: AlertDialog(
+          contentPadding: EdgeInsets.all(16.0),
+          content: Row(
+            children: [
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    textAlign: TextAlign.end,
+                    textDirection: TextDirection.rtl,
+                    keyboardType: TextInputType.number ,
+                    decoration: InputDecoration(
+                      labelText: 'ادخل المبلغ',
+                      labelStyle: TextStyle(
+
+                      ),
+
+                    ),
+                    validator: (value) => validatePrice(value),
+                     onSaved: (value) => pricePar = int.parse(value),
+
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            FlatButton(
+              child: Text('تأكيد'),
+              onPressed: (){
+                if(_formKey.currentState.validate()){
+                  _formKey.currentState.save();
+                  if(pricePar != null && pricePar >= minPrice){
+                    createSubCollectionForAucthion();
+                    Navigator.pop(context);
+                  }
+                }
+
+              },
+            ),
+          ],
+        ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: Color(0xffF7F7F7),
       appBar: AppBar(
@@ -70,7 +159,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 color: Colors.white,
                 child: Center(
                   child: SizedBox(
-                    height:400.0,
+                    height: 400.0,
                     width: MediaQuery.of(context).size.width,
                     child: Carousel(
                       boxFit: BoxFit.cover,
@@ -90,57 +179,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 ),
               ),
 
-              /*  CarouselSlider(
-                items: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Image.,
-                  ),
-                ],
-                options: CarouselOptions(
-                  height: 220,
-                  enlargeCenterPage: true,
-                  autoPlay: true,
-                  aspectRatio: 16 / 9,
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enableInfiniteScroll: true,
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
-                  viewportFraction: 0.8,
-                ),
-                items: [
 
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Image.network(),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      image: DecorationImage(
-                        image: AssetImage('images/2.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      image: DecorationImage(
-                        image: AssetImage('images/3.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
-              ),*/
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -166,35 +205,38 @@ class _DetailScreenState extends State<DetailScreen> {
                       ),
                     ),
                   ],
-                  ),
-              ),
-            if(itemNotifier.currentItem.type == 'مزاد')...[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                   children:[
-                     Container(
-                       padding: EdgeInsets.all(5.0),
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                         color: Color(0xFF027843),
-                       ),
-                       child: Row(
-                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                         children: [
-                           Icon(Icons.monetization_on_outlined , color: Colors.white,),
-
-                           Text(itemNotifier.currentItem.price,style: TextStyle(color: Colors.white),),
-                         ],
-                       ),
-                     ),
-                   ],
-
                 ),
               ),
-            ],
-
+              if (itemNotifier.currentItem.type == 'مزاد') ...[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                          color: Color(0xFF027843),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              Icons.monetization_on_outlined,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              itemNotifier.currentItem.price,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
@@ -223,14 +265,12 @@ class _DetailScreenState extends State<DetailScreen> {
                   RaisedButton(
                     shape: StadiumBorder(),
                     color: Color(0xFF027843),
-                    child: Text(
-                      'تواصل',
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.white,
-                      ),
-                        textAlign: TextAlign.center
-                    ),
+                    child: Text('تواصل',
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center),
                     onPressed: () {
                       if (authProvider.isAuthenticated) {} // for chat leave it until the feature complete ..
                       if (!authProvider.isAuthenticated) {
@@ -260,7 +300,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         }
                       }
                       if (!authProvider.isAuthenticated) {
-                       showAlertDialog(context);
+                        showAlertDialog(context);
                       }
                     },
                   ),
@@ -271,8 +311,8 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
       ),
     );
-
   }
+
   showAlertDialog(BuildContext context) {
     // Create button
     Widget okButton = FlatButton(
@@ -284,8 +324,11 @@ class _DetailScreenState extends State<DetailScreen> {
 
     // Create AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Directionality(child: Text("غير مسجل"),textDirection: TextDirection.rtl),
-      content: Directionality(child: Text("يجب تسجيل الدخول حتى تتمكن من استخدام الميزة"), textDirection: TextDirection.rtl),
+      title: Directionality(
+          child: Text("غير مسجل"), textDirection: TextDirection.rtl),
+      content: Directionality(
+          child: Text("يجب تسجيل الدخول حتى تتمكن من استخدام الميزة"),
+          textDirection: TextDirection.rtl),
       actions: [
         okButton,
       ],
@@ -300,48 +343,7 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
   // show dialog for enter the price
-_showDialog() async{
-    await showDialog<String>(
-      context: context,
-      child: _SystemPadding(child: AlertDialog(
-        contentPadding: EdgeInsets.all(16.0),
-        content: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                textAlign: TextAlign.end,
-                textDirection: TextDirection.rtl,
-                keyboardType: TextInputType.number ,
-                decoration: InputDecoration(
-                  labelText: 'ادخل المبلغ',
-                  labelStyle: TextStyle(
 
-                  ),
-                ),
-                 onChanged: (value){
-                  setState(() {
-                    price = value;
-                  });
-                  },
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          FlatButton(
-            child: Text('تأكيد'),
-            onPressed: (){
-              Navigator.pop(context);
-              if(price != null){
-                createSubCollectionForAucthion();
-              }
-            },
-          ),
-        ],
-      ),
-      ),
-    );
-}
 // dialog for conformation the donating process
   showDonatingDialog(BuildContext context) {
     // Create button
@@ -354,8 +356,12 @@ _showDialog() async{
 
     // Create AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Directionality(child: Text("تم ارسال الطلب"),textDirection: TextDirection.rtl),
-      content: Directionality(child: Text("تم ارسال الطلب لصاحب المنتج وسيتم التواصل معكم في حال الموافقة"), textDirection: TextDirection.rtl),
+      title: Directionality(
+          child: Text("تم ارسال الطلب"), textDirection: TextDirection.rtl),
+      content: Directionality(
+          child: Text(
+              "تم ارسال الطلب لصاحب المنتج وسيتم التواصل معكم في حال الموافقة"),
+          textDirection: TextDirection.rtl),
       actions: [
         okButton,
       ],
@@ -381,8 +387,6 @@ class _SystemPadding extends StatelessWidget {
     return new AnimatedContainer(
         padding: mediaQuery.viewInsets,
         duration: const Duration(milliseconds: 300),
-        child: child
-    );
+        child: child);
   }
 }
-

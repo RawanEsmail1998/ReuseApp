@@ -4,12 +4,17 @@ import 'package:provider/provider.dart';
 import 'package:reuse_app/add_item2.dart';
 import 'package:reuse_app/detailsScreen.dart';
 import 'package:reuse_app/item_notifier.dart';
-import 'Data_Search.dart';
+import 'package:filter_list/filter_list.dart';
 import 'add_item1.dart';
 import 'auth_provider.dart';
 import 'Login_Screen.dart';
 import 'Menu.dart';
+import 'allmessages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'constants.dart';
+import 'package:reuse_app/RegistrationScreen.dart';
+import 'myproducts.dart';
+
 
 class HomeScreen extends StatefulWidget {
   static String id = 'Home_Screen';
@@ -19,14 +24,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   AuthProvider authProvider;
-  List<String> collection = ['auctionItems','donatedItems'];
+  List<String> collection = ['auctionItems', 'donatedItems'];
   User loggedUser;
+  String resultFilter;
+  List items = [];
+  List filterItems = [];
+  String val;
+  bool _isSelected = false;
+  String searshBar = '';
+  List<String> countList = ['اثاث منزل','ادوات مطبخ','اجهزة'] ;
+  List<String> selectedCountList = [];
+  CollectionReference colitems =
+      FirebaseFirestore.instance.collection('donatedItems');
   void initState() {
-    ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen:false);
+    ItemNotifier itemNotifier =
+        Provider.of<ItemNotifier>(context, listen: false);
     getItem(itemNotifier);
     super.initState();
-
-
   }
 
 
@@ -34,25 +48,53 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context);
+    void _openFilterDialog() async {
+      await FilterListDialog.display(
+          context,
+          listData: countList,
+          selectedListData: selectedCountList,
+          height: 480,
+          headlineText: "Select Count",
+          searchFieldHintText: "Search Here",
+          label: (item) {
+            return item;
+          },
+          validateSelectedItem: (list, val) {
+            return list.contains(val);
+          },
+          onItemSearch: (list, text) {
+            // ignore: missing_return
+            if (list.any((element) =>
+                element.toLowerCase().contains(text.toLowerCase()))) {
+                   return list
+                  .where((element) =>
+                  element.toLowerCase().contains(text.toLowerCase()))
+                  .toList();
+            }
+          },
+          onApplyButtonClick: (list) {
+            if (list != null) {
+              setState(() {
+                selectedCountList = List.from(list);
+              });
+            }
+            Navigator.pop(context);
+          });
+    }
     return Scaffold(
       appBar: AppBar(
         title: Center(
           child: Text('Reuse'),
         ),
-        backgroundColor: Color(0xff4072AF),
+        backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            showSearch(
-              context: context,
-              delegate: DataSearch(),
-            );
-          },
+          icon: Icon(Icons.filter_alt_outlined),
+          onPressed: _openFilterDialog ,
         ),
       ),
       endDrawer: Theme(
         data: Theme.of(context).copyWith(
-          canvasColor: Color(0xffF7F7F7),
+          canvasColor: Colors.white,
         ),
         child: Drawer(
           child: Directionality(
@@ -61,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 DrawerHeader(
                   decoration: BoxDecoration(
-                    color: Color(0xffF7F7F7),
+                    color: Colors.white,
                     image: DecorationImage(
                       image: AssetImage('images/logo_Reuse.jpeg'),
                     ),
@@ -69,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Center(
                       child: Text(
                     'Reuse App',
-                    style: TextStyle(color: Color(0xff4072AF)),
+                    style: TextStyle(color: Colors.blue),
                   )),
                 ),
                 if (authProvider.isAuthenticated) ...[
@@ -81,17 +123,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   ListWidget(
-                    icon: Icons.mail_sharp,
-                    text: 'الرسائل',
+                    icon: Icons.all_inbox,
+                    text: 'منتجاتي',
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, MyProducts.id);
                     },
                   ),
                   ListWidget(
-                    icon: Icons.receipt_long_sharp,
-                    text: 'الطلبات',
+                    icon: Icons.mail_sharp,
+                    text: 'الرسائل',
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, Allmessages.id);
                     },
                   ),
                   ListWidget(
@@ -107,18 +149,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   ListTile(
                     leading: Icon(
                       Icons.login,
-                      color: Color(0xff4072AF),
+                      color: Colors.blue,
                     ),
                     title: Text(
                       'تسجيل الدخول',
                       style: TextStyle(
-                          color: Color(0xff4072AF),
-                          fontWeight: FontWeight.bold),
+                          color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onTap: () async {
                       // go to the login screen..
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, LoginScreen.id);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.app_registration,
+                      color: Colors.blue,
+                    ),
+                    title: Text(
+                      'انشاء حساب',
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () async {
+                      // go to the login screen..
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, RegistrationScreen.id);
                     },
                   ),
                 ],
@@ -130,102 +187,188 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Scrollbar(
         thickness: 3,
         child: SingleChildScrollView(
-                 child: Padding(
-                   padding:  EdgeInsets.symmetric(horizontal: 10.0),
-                   child: Column(
-                     children: [
-                       GridView.builder(
-                         shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                        physics: BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Column(
+              children: [
+                SizedBox(height: 10.0,),
+                TextField(
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    showCursor: true,
+                    decoration: KTextField.copyWith(hintText: 'ابحث عن المنتج', prefixIcon: IconTheme(
+                      data: IconThemeData(
+                        color: Colors.black45 ,
+                      ),
+                      child: Icon(Icons.search),
+                    ),),
+                    onChanged: (value) {
+                      setState(() {
+                        searshBar = value;
+                      });
+
+                    }),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                // Row(
+                //   children: [
+                //     Container(
+                //       child: Wrap(
+                //         spacing: 5.0,
+                //         runSpacing: 3.0,
+                //         children: [
+                //
+                //           FilterChip(
+                //             label: Text('اثاث منزل'),
+                //             labelStyle: TextStyle(
+                //                 color: Color(0xff4072AF),
+                //                 fontSize: 16.0,
+                //                 fontWeight: FontWeight.bold),
+                //             selected: _isSelected,
+                //             backgroundColor: Color(0xffededed),
+                //             onSelected: (isSelected) {
+                //               setState(() {
+                //                 _isSelected = isSelected;
+                //                 if (_isSelected) {
+                //                   resultFilter = filterCategory('اثاث منزل');
+                //                 }
+                //               });
+                //             },
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //     Divider(),
+                //   ],
+                // ),
+                ListView(
+                  shrinkWrap: true,
+                  children:[
+                    GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                        ),
                         itemCount: itemNotifier.itemList.length,
-                        itemBuilder: (BuildContext context , int index){
-                          return Card(
-                            elevation: 0.2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: InkWell(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: Image.network(itemNotifier.itemList[index].image[0], fit: BoxFit.cover,),
-                                  ),
-
-                                  SizedBox(height: 16.0,),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        itemBuilder: (BuildContext context, int index) {
+                          String name = itemNotifier.itemList[index].name;
+                          String cat = itemNotifier.itemList[index].category;
+                          if(name.contains(searshBar)){
+                            if(selectedCountList.contains(cat) || selectedCountList.isEmpty){
+                              return Card(
+                                borderOnForeground: true,
+                                elevation: 0.2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: InkWell(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      IconButton(
-                                        icon: Icon(Icons.favorite_border_sharp),
-                                        onPressed: (){
-
-                                        },
-                                      ),
-                                      SizedBox(width: 10.0,),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8),
-                                        child: Text(itemNotifier.itemList[index].name,style: TextStyle(fontWeight: FontWeight.bold), textDirection: TextDirection.rtl,),
-                                      ),
-
-
-
-                                    ],
-                                  ),
-                                  SizedBox(height: 10.0,),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(5.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                          color: Colors.red.shade600 ,
+                                      Flexible(
+                                        child: Image.network(
+                                          itemNotifier.itemList[index].image[0],
+                                          fit: BoxFit.cover,
                                         ),
-
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Icon(Icons.location_on_rounded,color: Colors.white,),
-
-                                            Text(
-                                              itemNotifier.itemList[index].city,
-                                              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(
+                                        height: 16.0,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.favorite_border_sharp),
+                                            onPressed: () {},
+                                          ),
+                                          SizedBox(
+                                            width: 10.0,
+                                          ),
+                                          Padding(
+                                            padding:
+                                            EdgeInsets.symmetric(horizontal: 8),
+                                            child: Text(
+                                              itemNotifier.itemList[index].name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                              textDirection: TextDirection.rtl,
                                             ),
-                                          ],
-
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8),
-                                        child: Text(itemNotifier.itemList[index].type, textDirection: TextDirection.rtl,),
+                                      SizedBox(
+                                        height: 10.0,
                                       ),
-
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(5.0),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0)),
+                                              color: Colors.red.shade600,
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on_rounded,
+                                                  color: Colors.white,
+                                                ),
+                                                Text(
+                                                  itemNotifier.itemList[index].city,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                            EdgeInsets.symmetric(horizontal: 8),
+                                            child: Text(
+                                              itemNotifier.itemList[index].type,
+                                              textDirection: TextDirection.rtl,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10.0,
+                                      ),
                                     ],
                                   ),
-                                  SizedBox(height: 10.0,),
-                                ],
-                              ),
-                              onTap: (){
-                                itemNotifier.currentItem = itemNotifier.itemList[index] ;
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (BuildContext context){
-                                    return DetailScreen();
-                                  })
-                                );
-                              },
-                            ),
-                          );
-                        },
+                                  onTap: () {
+                                    itemNotifier.currentItem =
+                                    itemNotifier.itemList[index];
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                          return DetailScreen();
+                                        }));
+                                  },
+                                ),
+                              );
+                            } else
+                              return SizedBox();
+                          }else
+                            return  SizedBox();
+
+                        }),
+                  ]
+
                 ),
-                     ],
-                   ),
-                 ),
+              ],
+            ),
+          ),
         ),
       ),
-
       floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

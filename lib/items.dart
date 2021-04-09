@@ -8,6 +8,7 @@ class Items{
   String documentId ;
   String price ;
   int duration ;
+  String category;
    String uid ;
 
   Items.fromMap(Map<String , dynamic> data){
@@ -18,6 +19,7 @@ class Items{
     details = data['details'];
     duration = data['duration'];
     price = data['price'] ;
+    category = data['category'];
     documentId = data['documentId'];
     uid = data['uid'] ;
   }
