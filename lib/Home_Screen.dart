@@ -242,14 +242,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 //     Divider(),
                 //   ],
                 // ),
-                ListView(
-                  shrinkWrap: true,
-                  children:[
                     GridView.builder(
                         shrinkWrap: true,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                         ),
+                        physics: BouncingScrollPhysics(),
                         itemCount: itemNotifier.itemList.length,
                         itemBuilder: (BuildContext context, int index) {
                           String name = itemNotifier.itemList[index].name;
@@ -364,11 +362,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ]
 
                 ),
-              ],
+
             ),
           ),
         ),
-      ),
       floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

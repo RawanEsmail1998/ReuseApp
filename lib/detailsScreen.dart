@@ -34,7 +34,7 @@ class _DetailScreenState extends State<DetailScreen> {
         .get()
         .then((value) {
       _auctionItems.doc(docId).collection('auctioneer').add({
-        'price': price,
+        'price': pricePar,
         'userId': useId,
         'name': value.data()['Full_Name'],
         'city': value.data()['City'],
@@ -62,9 +62,12 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen: false);
-     minPrice = int.parse(itemNotifier.currentItem.price);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     String validatePrice(String value)  {
+      setState(() {
+        minPrice = int.parse(itemNotifier.currentItem.price);
+      });
 
       if (value.isNotEmpty) {
         a = int.parse(value);
@@ -79,7 +82,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
     }
 
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
     image = itemNotifier.currentItem.image;
@@ -117,7 +119,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
                     ),
                     validator: (value) => validatePrice(value),
-                     onSaved: (value) => pricePar = int.parse(value),
+                     onSaved: (value) => pricePar = int.parse(value) ,
 
                   ),
                 ),
