@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 class Items{
   String name ;
@@ -9,7 +10,8 @@ class Items{
   String price ;
   int duration ;
   String category;
-   String uid ;
+  String uid ;
+  Timestamp createdOn ;
 
   Items.fromMap(Map<String , dynamic> data){
     name = data['name'];
@@ -22,5 +24,7 @@ class Items{
     category = data['category'];
     documentId = data['documentId'];
     uid = data['uid'] ;
+    createdOn = data['createdOn'];
+
   }
 }

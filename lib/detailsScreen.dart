@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:reuse_app/item_notifier.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'auth_provider.dart';
-
-
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 class DetailScreen extends StatefulWidget {
   static String id = 'Item';
   @override
@@ -18,10 +18,11 @@ class _DetailScreenState extends State<DetailScreen> {
   String price ;
    var a , minPrice;
    var pricePar ;
-   String error;
+  DateTime date ;
   final _formKey = GlobalKey<FormState>();
+  String email;
   CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
-
+ List<String> Emails = [];
   CollectionReference _donatedItems =
       FirebaseFirestore.instance.collection('donatedItems');
   String docId;
@@ -38,6 +39,7 @@ class _DetailScreenState extends State<DetailScreen> {
         'userId': useId,
         'name': value.data()['Full_Name'],
         'city': value.data()['City'],
+        'email':value.data()['email'],
       });
     });
   }
@@ -55,16 +57,46 @@ class _DetailScreenState extends State<DetailScreen> {
         'userId': useId,
         'name': value.data()['Full_Name'],
         'city': value.data()['City'],
+        'email':value.data()['email'],
       });
     });
   }
-
+  // sendEmail() async{
+  //   String username = 'username@gmail.com';
+  //   String password = 'password';
+  //   final smtpServer = gmailSaslXoauth2(username,password);
+  //   final message = Message()
+  //     ..from = Address(username, 'Reuse App')
+  //     ..recipients.add(Emails)
+  //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
+  //     ..text = 'نبارك لك لقد فزت بالمزاد';
+  //   try {
+  //     final sendReport = await send(message, smtpServer);
+  //     print('Message sent: ' + sendReport.toString());
+  //   } on MailerException catch (e) {
+  //     print('Message not sent.');
+  //     for (var p in e.problems) {
+  //       print('Problem: ${p.code}: ${p.msg}');
+  //     }
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    // date = itemNotifier.currentItem.createdOn.subtract(Duration(days: itemNotifier.currentItem.duration));
+    //  getItems() async {
+    //    if(date.isAfter(DateTime.now())) {
+    //      QuerySnapshot snapshot = await _donatedItems.doc(docId).collection('acutioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
+    //      snapshot.docs.forEach((document) {
+    //        email = document.data()['email'];
+    //        Emails.add(email);
+    //
+    //      });
+    //    }
+    //  }
 
-    String validatePrice(String value)  {
+      String validatePrice(String value)  {
       setState(() {
         minPrice = int.parse(itemNotifier.currentItem.price);
       });
@@ -81,7 +113,13 @@ class _DetailScreenState extends State<DetailScreen> {
       }
 
     }
-
+    String theLastNumberAution(){
+      if(pricePar == null){
+        return itemNotifier.currentItem.price;
+      }else{
+        return '$pricePar';
+      }
+    }
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
     image = itemNotifier.currentItem.image;
@@ -97,7 +135,6 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
     _showDialog() async{
-
       await showDialog<String>(
         context: context,
         child: _SystemPadding(child: AlertDialog(
@@ -136,6 +173,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     createSubCollectionForAucthion();
                     Navigator.pop(context);
                   }
+                  showCompleteAuctionDialog(context);
                 }
 
               },
@@ -229,7 +267,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               color: Colors.white,
                             ),
                             Text(
-                              itemNotifier.currentItem.price,
+                              theLastNumberAution(),
                               style: TextStyle(color: Colors.white),
                             ),
                           ],
@@ -264,22 +302,22 @@ class _DetailScreenState extends State<DetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  RaisedButton(
-                    shape: StadiumBorder(),
-                    color: Color(0xFF027843),
-                    child: Text('تواصل',
-                        style: TextStyle(
-                          fontSize: 28,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center),
-                    onPressed: () {
-                      if (authProvider.isAuthenticated) {} // for chat leave it until the feature complete ..
-                      if (!authProvider.isAuthenticated) {
-                        showAlertDialog(context);
-                      }
-                    },
-                  ),
+                  // RaisedButton(
+                  //   shape: StadiumBorder(),
+                  //   color: Color(0xFF027843),
+                  //   child: Text('تواصل',
+                  //       style: TextStyle(
+                  //         fontSize: 28,
+                  //         color: Colors.white,
+                  //       ),
+                  //       textAlign: TextAlign.center),
+                  //   onPressed: () {
+                  //     if (authProvider.isAuthenticated) {} // for chat leave it until the feature complete ..
+                  //     if (!authProvider.isAuthenticated) {
+                  //       showAlertDialog(context);
+                  //     }
+                  //   },
+                  // ),
                   RaisedButton(
                     shape: StadiumBorder(),
                     color: Color(0xFF027843),
@@ -294,11 +332,22 @@ class _DetailScreenState extends State<DetailScreen> {
                     onPressed: () {
                       if (authProvider.isAuthenticated) {
                         if (itemNotifier.currentItem.type == 'مزاد') {
-                          _showDialog();
+                          final useId = FirebaseAuth.instance.currentUser.uid;
+                          if(useId != itemNotifier.currentItem.uid){
+                            _showDialog();
+                          }else{
+                            //
+                            showOwnerDialog(context);
+                          }
+
                         }
                         if (itemNotifier.currentItem.type == 'تبرع') {
-                          createSubCollectionForDonating();
-                          showDonatingDialog(context);
+                          if(FirebaseAuth.instance.currentUser.uid !=itemNotifier.currentItem.uid ){
+                            createSubCollectionForDonating();
+                            showDonatingDialog(context);
+                          }else{
+                            showOwnerDialog(context);
+                          }
                         }
                       }
                       if (!authProvider.isAuthenticated) {
@@ -377,6 +426,70 @@ class _DetailScreenState extends State<DetailScreen> {
       },
     );
   }
+// dialog for the owner
+  showOwnerDialog(BuildContext context) {
+    // Create button
+    Widget okButton = FlatButton(
+      child: Text("موافق"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Directionality(
+          child: Text("غير مسموح"), textDirection: TextDirection.rtl),
+      content: Directionality(
+          child: Text(
+              "لايمكن لصاحب المنتج المشاركة "),
+          textDirection: TextDirection.rtl),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+// dialog for complete auction process
+  showCompleteAuctionDialog(BuildContext context) {
+    // Create button
+    Widget okButton = FlatButton(
+      child: Text("موافق"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Directionality(
+          child: Text("تمت عملية المزايدة"), textDirection: TextDirection.rtl),
+      content: Directionality(
+          child: Text(
+              "مشاركنك تمت وسيتم اعلامك في حال كان المنتج من نصيبك"),
+          textDirection: TextDirection.rtl),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+
 }
 class _SystemPadding extends StatelessWidget {
   final Widget child;
@@ -392,3 +505,17 @@ class _SystemPadding extends StatelessWidget {
         child: child);
   }
 }
+class sendEmailFromLocalHost extends StatefulWidget {
+  @override
+  _sendEmailFromLocalHostState createState() => _sendEmailFromLocalHostState();
+}
+
+class _sendEmailFromLocalHostState extends State<sendEmailFromLocalHost> {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+

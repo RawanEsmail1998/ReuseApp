@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List items = [];
   List filterItems = [];
   String val;
-  bool _isSelected = false;
+
   String searshBar = '';
   List<String> countList = ['اثاث منزل','ادوات مطبخ','اجهزة'] ;
   List<String> selectedCountList = [];
@@ -211,37 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 16.0,
                     ),
-                // Row(
-                //   children: [
-                //     Container(
-                //       child: Wrap(
-                //         spacing: 5.0,
-                //         runSpacing: 3.0,
-                //         children: [
-                //
-                //           FilterChip(
-                //             label: Text('اثاث منزل'),
-                //             labelStyle: TextStyle(
-                //                 color: Color(0xff4072AF),
-                //                 fontSize: 16.0,
-                //                 fontWeight: FontWeight.bold),
-                //             selected: _isSelected,
-                //             backgroundColor: Color(0xffededed),
-                //             onSelected: (isSelected) {
-                //               setState(() {
-                //                 _isSelected = isSelected;
-                //                 if (_isSelected) {
-                //                   resultFilter = filterCategory('اثاث منزل');
-                //                 }
-                //               });
-                //             },
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     Divider(),
-                //   ],
-                // ),
+
                     GridView.builder(
                         shrinkWrap: true,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
