@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:reuse_app/Home_Screen.dart';
+import 'package:reuse_app/resetPassword.dart';
 import 'RegistrationScreen.dart';
 import 'auth_provider.dart';
 
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffF7F7F7),
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Center(
@@ -52,16 +53,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: <Widget>[
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          color: Colors.white,
+                          color: Color(0xffF7F7F7),
                           height: MediaQuery.of(context).size.height * 0.30,
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                CircleAvatar(
-                                  backgroundImage:
-                                      AssetImage('images/logo_Reuse.jpeg'),
-                                  radius: 70,
+                                Container(
+                                  height: 200.0,
+                                  width: 200.0,
+                                  child: Image(
+                                    image: AssetImage('images/logo_Reuse.jpeg'),
+                                  ),
                                 ),
                                 Text(
                                   'مرحبًا بك، قم بتسجيل الدخول',
@@ -161,20 +164,38 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SizedBox(
                                       height: 20,
                                     ),
-                                    Container(
-                                      child: TextButton(
-                                        child: Text(
-                                          'ليس لديك حساب؟',
-                                          style: TextStyle(
-                                            color: Color(0xff4072AF),
-                                            fontSize: 16.0,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Container(
+                                          child: TextButton(
+                                            child: Text(
+                                              'ليس لديك حساب؟',
+                                              style: TextStyle(
+                                                color: Color(0xff4072AF),
+                                                fontSize: 16.0,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushNamed(context,
+                                                  RegistrationScreen.id);
+                                            },
                                           ),
                                         ),
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, RegistrationScreen.id);
-                                        },
-                                      ),
+                                        Container(
+                                            child: TextButton(
+                                          child: Text(
+                                            'نسيت كلمة المرور؟',
+                                            style: TextStyle(
+                                              color: Color(0xff4072AF),
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ResetPasswordScreen()));
+                                          },
+                                        )),
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 20,

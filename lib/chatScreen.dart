@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'constants2.dart';
 import 'package:flutter/gestures.dart';
+import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage ;
+import 'package:path/path.dart' as Path;
 import 'package:intl/date_symbol_data_local.dart';
 
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 AuthProvider authProvider;
 User loggedUser;
+
 String _uid = FirebaseAuth.instance.currentUser.uid;
 
 class ChatScreen extends StatefulWidget {
@@ -24,9 +29,44 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
+  File _image;
+  bool isLoading;
+  String imageUrl;
+  String message ;
+  final picker = ImagePicker();
+  firebase_Storage.Reference ref ;
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+  Future uploadFile() async {
+    //file compression
+    ref = firebase_Storage.FirebaseStorage.instance
+        .ref()
+        .child('images/${Path.basename(_image.path)}');
+    await ref.putFile(_image).whenComplete(() async {
+      await ref.getDownloadURL().then((value) {
+        setState(() {
+          imageUrl = value ;
+        });
+
+
+    });
+  });
+  }
 
   void initState() {
     super.initState();
+
   }
 
   String documentId(String from, String to) {
@@ -40,6 +80,12 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
             title: Center(child: Text('الرسائل الخاصة')),
+            actions: <Widget>[
+              IconButton(
+                icon:Icon(Icons.camera_alt),
+                onPressed: getImage ,
+              )
+            ],
             backgroundColor: Colors.blue),
         body: SafeArea(
             child: Column(
@@ -69,13 +115,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     dragStartBehavior: DragStartBehavior.down,
                     itemBuilder: (context, index) {
                       DocumentSnapshot document = snapshot.data.docs[index];
-                      String message = document.data()['content'];
+                       String message = document.data()['content'];
                       String senderid = document.data()['fromId'];
+                      if(document.data()['image'] !=null){
+                        String img = document.data()['image'];
+                      }
                       final Timestamp timestamp =
                           document.data()['timeStamp'] as Timestamp;
                       final DateTime dateTime = timestamp.toDate();
                       final dateString = DateFormat('K:mm').format(dateTime);
                       bool isMe = _uid == senderid ? true : false;
+                      bool isText = _image == null? true: false ;
                       return Padding(
                         padding: EdgeInsets.all(5.0),
                         child: Column(
@@ -107,15 +157,43 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 10.0, horizontal: 20.0),
-                                child: Text(
+
+                                child:Text(
                                   message,
                                   style: TextStyle(
                                     color: isMe ? Colors.white : Colors.black54,
                                     fontSize: 15.0,
                                   ),
                                 ),
+                                // Image.network(imageUrl, width:200.0, height:200.0),
                               ),
                             ),
+                            if(imageUrl != null)...[
+                              Material(
+                                borderRadius: isMe
+                                    ? BorderRadius.only(
+                                    topLeft: Radius.circular(30.0),
+                                    bottomLeft: Radius.circular(30.0),
+                                    bottomRight: Radius.circular(30.0))
+                                    : BorderRadius.only(
+                                  bottomLeft: Radius.circular(30.0),
+                                  bottomRight: Radius.circular(30.0),
+                                  topRight: Radius.circular(30.0),
+                                ),
+                                elevation: 5.0,
+                                color:
+                                isMe ? Colors.lightBlueAccent : Colors.white,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+
+                                  child:Image.network(imageUrl, width:200.0, height:200.0),
+                                ),
+                                // Image.network(imageUrl, width:200.0, height:200.0),
+                              ),
+                            ]
+
+
                           ],
                         ),
                       );
@@ -127,6 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
+
                     FlatButton(
                       onPressed: () {
                         _firestore
@@ -137,10 +216,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           'content': messageTextController.text,
                           'fromId': FirebaseAuth.instance.currentUser.uid,
                           'toId': widget.receiverId,
+                          'image': imageUrl,
                           'timeStamp': DateTime.now()
                         });
                         messageTextController.clear();
                       },
+
                       child: Text(
                         'ارسال',
                         style: kSendButtonTextStyle,
@@ -151,8 +232,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         textAlign: TextAlign.end,
                         controller: messageTextController,
                         decoration: kMessageTextFieldDecoration,
+
                       ),
                     ),
+
                   ])),
             ])));
   }
@@ -161,10 +244,11 @@ class _ChatScreenState extends State<ChatScreen> {
 class MessageBubble extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {}
-  MessageBubble({this.sender, this.text, this.isMe});
+  MessageBubble({this.sender, this.text, this.isMe ,this.image});
 
   final String sender;
   final String text;
+  final Image image ;
   final bool isMe;
 
   @override
@@ -182,6 +266,7 @@ class MessageBubble extends StatefulWidget {
               color: Colors.black54,
             ),
           ),
+
           Material(
             borderRadius: isMe
                 ? BorderRadius.only(
@@ -196,15 +281,16 @@ class MessageBubble extends StatefulWidget {
             elevation: 5.0,
             color: isMe ? Colors.lightBlueAccent : Colors.white,
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black54,
-                  fontSize: 15.0,
+                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: isMe ? Colors.white : Colors.black54,
+                      fontSize: 15.0,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+
           ),
         ],
       ),
