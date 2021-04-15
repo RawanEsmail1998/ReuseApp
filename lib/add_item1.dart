@@ -20,10 +20,10 @@ class _AddItem1State extends State<AddItem1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Center(child: Text('أضف منتجك')),
-        backgroundColor: Color(0xff4072AF),
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -85,7 +85,7 @@ class _AddItem1State extends State<AddItem1> {
                       });
                     },
                     text: 'التالي',
-                    color: Color(0xff4072AF),
+                    color: Colors.blue,
                   ),
                 ],
               ),

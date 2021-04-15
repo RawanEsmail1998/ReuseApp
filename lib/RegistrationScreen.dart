@@ -85,7 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return StreamProvider<QuerySnapshot>.value(
       value: Database().account,
       child: Scaffold(
-        backgroundColor: Color(0xffF7F7F7),
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Center(
             child: Text('Reuse'),
@@ -140,15 +140,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         formState.save();
                         dynamic result = await _auth
                             .registerWithEmailAndPassword(email, _password);
+
                         if (result == null) {
                           setState(() => error = 'البريد مسجل مسبقاً');
                         } else if (result != null) {
                           db.userSetup(fullName, phoneNumber, city, email);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("الرجاء النقر على الرابط المرسل على بريدك الإلكتروني لتتمكن من تسجيل الدخول"),
+                              ));
                           Navigator.pushNamed(context, LoginScreen.id);
                         }
                       }
                     },
-                    color: Color(0xff4072AF),
+                    color: Colors.blue,
                     text: 'انشيء حساب جديد',
                   ),
                   SizedBox(

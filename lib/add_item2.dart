@@ -54,10 +54,10 @@ class _AddItemState extends State<AddItem> {
   Widget build(BuildContext context) {
     var v4 = uuid.v4 ;
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Center(child: Text('أضف منتجك')),
-        backgroundColor: Color(0xff4072AF),
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -305,7 +305,7 @@ class _AddItemState extends State<AddItem> {
 
                   },
                   text: 'التالي',
-                  color: Color(0xff4072AF),
+                  color: Colors.blue,
                 ),
               ],
             ),

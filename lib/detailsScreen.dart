@@ -19,10 +19,12 @@ class _DetailScreenState extends State<DetailScreen> {
    var a , minPrice;
    var pricePar ;
   DateTime date ;
+  DateTime dateAfterAuction ;
   final _formKey = GlobalKey<FormState>();
   String email;
   CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
- List<String> Emails = [];
+ String winnerEmail ;
+  List<dynamic> looserEmail = [];
   CollectionReference _donatedItems =
       FirebaseFirestore.instance.collection('donatedItems');
   String docId;
@@ -61,52 +63,99 @@ class _DetailScreenState extends State<DetailScreen> {
       });
     });
   }
-  // sendEmail() async{
-  //   String username = 'username@gmail.com';
-  //   String password = 'password';
-  //   final smtpServer = gmailSaslXoauth2(username,password);
-  //   final message = Message()
-  //     ..from = Address(username, 'Reuse App')
-  //     ..recipients.add(Emails)
-  //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
-  //     ..text = 'نبارك لك لقد فزت بالمزاد';
-  //   try {
-  //     final sendReport = await send(message, smtpServer);
-  //     print('Message sent: ' + sendReport.toString());
-  //   } on MailerException catch (e) {
-  //     print('Message not sent.');
-  //     for (var p in e.problems) {
-  //       print('Problem: ${p.code}: ${p.msg}');
-  //     }
-  //   }
-  // }
+
   @override
   Widget build(BuildContext context) {
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    // date = itemNotifier.currentItem.createdOn.subtract(Duration(days: itemNotifier.currentItem.duration));
-    //  getItems() async {
-    //    if(date.isAfter(DateTime.now())) {
-    //      QuerySnapshot snapshot = await _donatedItems.doc(docId).collection('acutioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
-    //      snapshot.docs.forEach((document) {
-    //        email = document.data()['email'];
-    //        Emails.add(email);
+    String name = itemNotifier.currentItem.name ;
+    // sendEmail() async{
+    //   String username = 'reuseapp0@gmail.com';
+    //   String password = 'r0w21E5Nfoiy';
+    //   final smtpServer = gmailSaslXoauth2(username,password);
+    //   // send emails for winner in auction
+    //   final winnerMessage = Message()
+    //     ..from = Address(username, 'Reuse App')
+    //     ..recipients.add(winnerEmail)
+    //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
+    //     ..text = '$nameنبارك لك لقد فزت ب'
+    //     ..html = '<h1>Test</h1><p>Hey!</p>';
     //
-    //      });
-    //    }
-    //  }
+    //   try {
+    //     final sendReport = await send(winnerMessage, smtpServer);
+    //     print('Message sent: ' + sendReport.toString());
+    //   } on MailerException catch (e) {
+    //     print('Message not sent.');
+    //     for (var p in e.problems) {
+    //       print('Problem: ${p.code}: ${p.msg}');
+    //     }
+    //   }
+    //   // send email for looser in auction
+    //   final looserMessage = Message()
+    //     ..from = Address(username, 'Reuse App')
+    //     ..recipients.addAll(looserEmail)
+    //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
+    //     ..text = '$name نعتذر لعدم فوزك وحظ اوفر المرة القادمة ب';
+    //   try {
+    //     final sendReport = await send(looserMessage, smtpServer);
+    //     print('Message sent: ' + sendReport.toString());
+    //   } on MailerException catch (e) {
+    //     print('Message not sent.');
+    //     for (var p in e.problems) {
+    //       print('Problem: ${p.code}: ${p.msg}');
+    //     }
+    //   }
+    //   final sendReport2 = await send(winnerMessage, smtpServer);
+    //   final sendReport3 = await send(looserMessage, smtpServer);
+    //   var connection = PersistentConnection(smtpServer);
+    //   await connection.send(winnerMessage);
+    //   await connection.send(looserMessage);
+    //   await connection.close();
+    //
+    // }
 
+    // getAuctioneer() async {
+    //   if(DateTime.now().isBefore(dateAfterAuction)) {
+    //     QuerySnapshot winner = await _auctionItems.doc(docId).collection('auctioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
+    //     winner.docs.forEach((document) {
+    //       email = document.data()['email'];
+    //       setState(() {
+    //         winnerEmail = email ;
+    //       });
+    //
+    //     });
+    //     QuerySnapshot looser = await _auctionItems.doc(docId).collection('auctioneer').where('price',isLessThan: pricePar).get();
+    //     looser.docs.forEach((document) {
+    //       email = document.data()['email'];
+    //       looserEmail.add(email);
+    //
+    //     });
+    //     sendEmail();
+    //   }
+    // }
+    //   if(itemNotifier.currentItem.type == 'مزاد'){
+    //     date = itemNotifier.currentItem.createdOn.toDate();
+    //     dateAfterAuction =  date.add(Duration(days: itemNotifier.currentItem.duration));
+    //     getAuctioneer();
+    //
+    //   }
       String validatePrice(String value)  {
       setState(() {
-        minPrice = int.parse(itemNotifier.currentItem.price);
+        if(minPrice == null){
+          minPrice = int.parse(itemNotifier.currentItem.price);
+        }else{
+          minPrice = pricePar;
+        }
+
+
       });
 
       if (value.isNotEmpty) {
         a = int.parse(value);
-        if(a < minPrice){
-          return 'يجب أن لايقل المبلغ عن الحد الادني' ;
+        if(a > minPrice){
+          return  null ;
         }else{
-          return null ;
+          return 'يجب أن يكون المبلغ أكبر من الحد الادني' ;
         }
       }else{
         return 'الرجاء ادخال رقم' ;
@@ -184,10 +233,10 @@ class _DetailScreenState extends State<DetailScreen> {
       );
     }
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Center(child: Text('منتج')),
-        backgroundColor: Color(0xff4072AF),
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Center(

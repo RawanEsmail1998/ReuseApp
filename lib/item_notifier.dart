@@ -6,8 +6,10 @@ import 'items.dart';
 class ItemNotifier with ChangeNotifier {
   List<Items> _itemList = [];
   Items _currentItem ;
-  UnmodifiableListView<Items> get itemList => UnmodifiableListView(_itemList) ;
-  Items get currentItem => _currentItem ;
+  // UnmodifiableListView<Items> get itemList => UnmodifiableListView(_itemList) ;
+  List<Items> get itemList => _itemList;
+
+      Items get currentItem => _currentItem ;
   set itemList(List<Items> itemList){
     _itemList = itemList;
     notifyListeners();
