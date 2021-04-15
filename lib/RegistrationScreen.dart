@@ -59,7 +59,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       textAlign: TextAlign.right,
       showCursor: true,
       keyboardType: TextInputType.emailAddress,
-      validator:(value) => emailValid(value)?  null : 'الرجاء ادخال بريد صالح',
+      validator: (value) => emailValid(value) ? null : 'الرجاء ادخال بريد صالح',
       onSaved: (value) => email = value,
     );
 
@@ -145,9 +145,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           setState(() => error = 'البريد مسجل مسبقاً');
                         } else if (result != null) {
                           db.userSetup(fullName, phoneNumber, city, email);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("الرجاء النقر على الرابط المرسل على بريدك الإلكتروني لتتمكن من تسجيل الدخول"),
-                              ));
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                "الرجاء النقر على الرابط المرسل على بريدك الإلكتروني لتتمكن من تسجيل الدخول"),
+                          ));
                           Navigator.pushNamed(context, LoginScreen.id);
                         }
                       }
@@ -167,8 +168,3 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 }
-
-
-
-
-

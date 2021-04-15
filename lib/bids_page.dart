@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -5,17 +7,17 @@ import 'auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'chatScreen.dart';
 
-class RequestsPage extends StatefulWidget {
+class BidsPage extends StatefulWidget {
   static String id = 'RequestsPage';
   // String docId;
   String uid = FirebaseAuth.instance.currentUser.uid;
   final String docId;
-  RequestsPage({Key key, @required this.docId}) : super(key: key);
+  BidsPage({Key key, @required this.docId}) : super(key: key);
   @override
-  _RequestsPageState createState() => _RequestsPageState();
+  _BidsPageState createState() => _BidsPageState();
 }
 
-class _RequestsPageState extends State<RequestsPage> {
+class _BidsPageState extends State<BidsPage> {
   AuthProvider authProvider;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
@@ -37,14 +39,14 @@ class _RequestsPageState extends State<RequestsPage> {
       child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Center(child: Text('قائمة الطلبات')),
+            title: Center(child: Text('قائمة المزايدات')),
             backgroundColor: Colors.blue,
           ),
           body: StreamBuilder(
               stream: _firestore
-                  .collection('/donatedItems')
+                  .collection('/auctionItems')
                   .doc(widget.docId)
-                  .collection('/requests')
+                  .collection('/auctioneer')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -55,7 +57,7 @@ class _RequestsPageState extends State<RequestsPage> {
                 if (snapshot.data.docs.length == 0) {
                   return Center(
                     child: Text(
-                      'لا يوجد طلبات.',
+                      'لا توجد مزايدات حتى الآن.',
                       style: TextStyle(color: Colors.black54, fontSize: 17),
                     ),
                   );
@@ -67,33 +69,33 @@ class _RequestsPageState extends State<RequestsPage> {
                         final receiverId = document.data()['userId'];
                         final userName = document.data()['name'];
                         final userCity = document.data()['city'];
+                        final userbid = document.data()['price'];
 
                         return Container(
                             width: 400,
-                            height: 120,
-                            padding: const EdgeInsets.all(2.0),
-                            margin: const EdgeInsets.all(7),
+                            height: 140,
+                            padding: const EdgeInsets.all(5.0),
+                            margin: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
                                 shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(20),
-                                color: Color(0xffD0ECE7),
+                                borderRadius: BorderRadius.circular(7),
+                                color: Colors.teal[100],
                                 border: Border.all(
-                                  width: 0.7,
+                                  width: 0.5,
                                   color: Colors.blueGrey,
                                 )),
                             child: Column(children: [
                               Text(
-                                '$userName طلب من ',
+                                '$userName',
                                 style: TextStyle(
-                                    fontSize: 23,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.bold),
+                                  fontSize: 25,
+                                ),
                               ),
-                              Text(
-                                '$userCity',
-                                style: TextStyle(
-                                    fontSize: 19, color: Colors.black),
-                              ),
+                              Text('بمبلغ:$userbid',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              Text('$userCity'),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -115,14 +117,14 @@ class _RequestsPageState extends State<RequestsPage> {
                                                   color: Colors.white),
                                             ),
                                             Text(
-                                              'قبول الطلب',
+                                              'بيع المنتج',
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 20),
                                             ),
                                           ])),
                                   FlatButton(
-                                      color: Color(0xff0B5345),
+                                      color: Color(0xFF0B5345),
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               new BorderRadius.circular(30.0)),
@@ -149,7 +151,20 @@ class _RequestsPageState extends State<RequestsPage> {
                                                   docId = value.docs.first.id;
                                                 });
                                               }
-                                            });
+                                            }
+
+                                                // value.docs.forEach((element) {
+                                                //   setState(() {
+                                                //     convExist = element.exists;
+                                                //   });
+                                                //
+                                                //   if (convExist == true) {
+                                                //     setState(() {
+
+                                                //     });
+
+                                                // })
+                                                );
                                         if (convExist) {
                                           Navigator.push(
                                               context,
@@ -192,12 +207,8 @@ class _RequestsPageState extends State<RequestsPage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(3.0),
-                                              child: Icon(Icons.message,
-                                                  color: Colors.white),
-                                            ),
+                                            Icon(Icons.message,
+                                                color: Colors.white),
                                             Text(
                                               'محادثة خاصة',
                                               style: TextStyle(
@@ -209,6 +220,38 @@ class _RequestsPageState extends State<RequestsPage> {
                               )
                             ]));
                       });
+                  //   for (var item in myitem) {
+                  //
+                  //     Widget requestWidget = Container(
+                  //         width: 400,
+                  //         height: 120,
+                  //         padding: const EdgeInsets.all(5.0),
+                  //         margin: const EdgeInsets.all(6),
+                  //         decoration: BoxDecoration(
+                  //             shape: BoxShape.rectangle,
+                  //             borderRadius: BorderRadius.circular(7),
+                  //             color: Colors.teal[100],
+                  //             border: Border.all(
+                  //               width: 0.5,
+                  //               color: Colors.blueGrey,
+                  //             )),
+                  //         child: Column(
+                  //           children: [
+                  //             Text(
+                  //               '$userCity',
+                  //               style: TextStyle(
+                  //                 fontSize: 30,
+                  //               ),
+                  //             ),
+                  //             Text('$userName')
+                  //           ],
+                  //         ));
+                  //     requestsitemWidgets.add(requestWidget);
+                  //   }
+                  // }
+                  // return Column(
+                  //   children: requestWidget,
+                  // );
                 }
               })),
     );

@@ -10,6 +10,7 @@ import 'Home_Screen.dart';
 import 'package:reuse_app/requests_page.dart';
 import 'package:reuse_app/upload_images.dart';
 import 'Home_Screen.dart';
+import 'bids_page.dart';
 import 'requests_page.dart';
 import 'RegistrationScreen.dart';
 import 'donatedItem.dart';
@@ -62,6 +63,7 @@ class ReuseApp extends StatelessWidget {
             DetailScreen.id: (context) => DetailScreen(),
             ChatScreen.id: (context) => ChatScreen(),
             Allmessages.id: (context) => Allmessages(),
+            BidsPage.id: (context) => BidsPage(),
           }),
     );
   }

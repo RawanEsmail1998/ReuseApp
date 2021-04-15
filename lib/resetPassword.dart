@@ -37,7 +37,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0 , vertical: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
           child: Column(
             children: [
               TextFormField(
@@ -47,23 +47,25 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 showCursor: true,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) =>
-                emailValid(value) ? null : 'الرجاء ادخال بريد صالح',
+                    emailValid(value) ? null : 'الرجاء ادخال بريد صالح',
                 onSaved: (value) => email = value,
               ),
               RoundedButton(
-                onPressed: (){
+                onPressed: () {
                   final formState = _formKey.currentState;
-                  if(formState.validate()){
+                  if (formState.validate()) {
                     formState.save();
                     _auth.sendPasswordResetEmail(email: email);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("تم ارسال رابط استعادة كلمة المرور على البريد الإلكتروني"),
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          "تم ارسال رابط استعادة كلمة المرور على البريد الإلكتروني"),
                     ));
                     Navigator.of(context).pop();
                   }
-
-              },
-              color: Colors.blue,text: 'التالي',)
+                },
+                color: Colors.blue,
+                text: 'التالي',
+              )
             ],
           ),
         ),

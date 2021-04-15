@@ -7,6 +7,7 @@ import 'package:carousel_pro/carousel_pro.dart';
 import 'auth_provider.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+
 class DetailScreen extends StatefulWidget {
   static String id = 'Item';
   @override
@@ -15,16 +16,15 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   List image;
-  String price ;
-   var a , minPrice;
-   var pricePar ;
-  DateTime date ;
-  DateTime dateAfterAuction ;
+  String price;
+  var a, minPrice;
+  var pricePar;
+  DateTime date;
   final _formKey = GlobalKey<FormState>();
   String email;
-  CollectionReference _auctionItems = FirebaseFirestore.instance.collection('auctionItems');
- String winnerEmail ;
-  List<dynamic> looserEmail = [];
+  CollectionReference _auctionItems =
+      FirebaseFirestore.instance.collection('auctionItems');
+  List<String> Emails = [];
   CollectionReference _donatedItems =
       FirebaseFirestore.instance.collection('donatedItems');
   String docId;
@@ -41,7 +41,7 @@ class _DetailScreenState extends State<DetailScreen> {
         'userId': useId,
         'name': value.data()['Full_Name'],
         'city': value.data()['City'],
-        'email':value.data()['email'],
+        'email': value.data()['email'],
       });
     });
   }
@@ -59,116 +59,72 @@ class _DetailScreenState extends State<DetailScreen> {
         'userId': useId,
         'name': value.data()['Full_Name'],
         'city': value.data()['City'],
-        'email':value.data()['email'],
+        'email': value.data()['email'],
       });
     });
   }
 
+  // sendEmail() async{
+  //   String username = 'username@gmail.com';
+  //   String password = 'password';
+  //   final smtpServer = gmailSaslXoauth2(username,password);
+  //   final message = Message()
+  //     ..from = Address(username, 'Reuse App')
+  //     ..recipients.add(Emails)
+  //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
+  //     ..text = 'نبارك لك لقد فزت بالمزاد';
+  //   try {
+  //     final sendReport = await send(message, smtpServer);
+  //     print('Message sent: ' + sendReport.toString());
+  //   } on MailerException catch (e) {
+  //     print('Message not sent.');
+  //     for (var p in e.problems) {
+  //       print('Problem: ${p.code}: ${p.msg}');
+  //     }
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
-    ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context, listen: false);
+    ItemNotifier itemNotifier =
+        Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    String name = itemNotifier.currentItem.name ;
-    // sendEmail() async{
-    //   String username = 'reuseapp0@gmail.com';
-    //   String password = 'r0w21E5Nfoiy';
-    //   final smtpServer = gmailSaslXoauth2(username,password);
-    //   // send emails for winner in auction
-    //   final winnerMessage = Message()
-    //     ..from = Address(username, 'Reuse App')
-    //     ..recipients.add(winnerEmail)
-    //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
-    //     ..text = '$nameنبارك لك لقد فزت ب'
-    //     ..html = '<h1>Test</h1><p>Hey!</p>';
+    // date = itemNotifier.currentItem.createdOn.subtract(Duration(days: itemNotifier.currentItem.duration));
+    //  getItems() async {
+    //    if(date.isAfter(DateTime.now())) {
+    //      QuerySnapshot snapshot = await _donatedItems.doc(docId).collection('acutioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
+    //      snapshot.docs.forEach((document) {
+    //        email = document.data()['email'];
+    //        Emails.add(email);
     //
-    //   try {
-    //     final sendReport = await send(winnerMessage, smtpServer);
-    //     print('Message sent: ' + sendReport.toString());
-    //   } on MailerException catch (e) {
-    //     print('Message not sent.');
-    //     for (var p in e.problems) {
-    //       print('Problem: ${p.code}: ${p.msg}');
-    //     }
-    //   }
-    //   // send email for looser in auction
-    //   final looserMessage = Message()
-    //     ..from = Address(username, 'Reuse App')
-    //     ..recipients.addAll(looserEmail)
-    //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
-    //     ..text = '$name نعتذر لعدم فوزك وحظ اوفر المرة القادمة ب';
-    //   try {
-    //     final sendReport = await send(looserMessage, smtpServer);
-    //     print('Message sent: ' + sendReport.toString());
-    //   } on MailerException catch (e) {
-    //     print('Message not sent.');
-    //     for (var p in e.problems) {
-    //       print('Problem: ${p.code}: ${p.msg}');
-    //     }
-    //   }
-    //   final sendReport2 = await send(winnerMessage, smtpServer);
-    //   final sendReport3 = await send(looserMessage, smtpServer);
-    //   var connection = PersistentConnection(smtpServer);
-    //   await connection.send(winnerMessage);
-    //   await connection.send(looserMessage);
-    //   await connection.close();
-    //
-    // }
+    //      });
+    //    }
+    //  }
 
-    // getAuctioneer() async {
-    //   if(DateTime.now().isBefore(dateAfterAuction)) {
-    //     QuerySnapshot winner = await _auctionItems.doc(docId).collection('auctioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
-    //     winner.docs.forEach((document) {
-    //       email = document.data()['email'];
-    //       setState(() {
-    //         winnerEmail = email ;
-    //       });
-    //
-    //     });
-    //     QuerySnapshot looser = await _auctionItems.doc(docId).collection('auctioneer').where('price',isLessThan: pricePar).get();
-    //     looser.docs.forEach((document) {
-    //       email = document.data()['email'];
-    //       looserEmail.add(email);
-    //
-    //     });
-    //     sendEmail();
-    //   }
-    // }
-    //   if(itemNotifier.currentItem.type == 'مزاد'){
-    //     date = itemNotifier.currentItem.createdOn.toDate();
-    //     dateAfterAuction =  date.add(Duration(days: itemNotifier.currentItem.duration));
-    //     getAuctioneer();
-    //
-    //   }
-      String validatePrice(String value)  {
+    String validatePrice(String value) {
       setState(() {
-        if(minPrice == null){
-          minPrice = int.parse(itemNotifier.currentItem.price);
-        }else{
-          minPrice = pricePar;
-        }
-
-
+        minPrice = int.parse(itemNotifier.currentItem.price);
       });
 
       if (value.isNotEmpty) {
         a = int.parse(value);
-        if(a > minPrice){
-          return  null ;
-        }else{
-          return 'يجب أن يكون المبلغ أكبر من الحد الادني' ;
+        if (a < minPrice) {
+          return 'يجب أن لايقل المبلغ عن الحد الادني';
+        } else {
+          return null;
         }
-      }else{
-        return 'الرجاء ادخال رقم' ;
+      } else {
+        return 'الرجاء ادخال رقم';
       }
-
     }
-    String theLastNumberAution(){
-      if(pricePar == null){
+
+    String theLastNumberAution() {
+      if (pricePar == null) {
         return itemNotifier.currentItem.price;
-      }else{
+      } else {
         return '$pricePar';
       }
     }
+
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
     image = itemNotifier.currentItem.image;
@@ -183,60 +139,58 @@ class _DetailScreenState extends State<DetailScreen> {
         return 'ارسل طلب';
       }
     }
-    _showDialog() async{
+
+    _showDialog() async {
       await showDialog<String>(
         context: context,
-        child: _SystemPadding(child: AlertDialog(
-          contentPadding: EdgeInsets.all(16.0),
-          content: Row(
-            children: [
-              Expanded(
-                child: Form(
-                  key: _formKey,
-                  child: TextFormField(
-                    textAlign: TextAlign.end,
-                    textDirection: TextDirection.rtl,
-                    keyboardType: TextInputType.number ,
-                    decoration: InputDecoration(
-                      labelText: 'ادخل المبلغ',
-                      labelStyle: TextStyle(
-
+        child: _SystemPadding(
+          child: AlertDialog(
+            contentPadding: EdgeInsets.all(16.0),
+            content: Row(
+              children: [
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      textAlign: TextAlign.end,
+                      textDirection: TextDirection.rtl,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'ادخل المبلغ',
+                        labelStyle: TextStyle(),
                       ),
-
+                      validator: (value) => validatePrice(value),
+                      onSaved: (value) => pricePar = int.parse(value),
                     ),
-                    validator: (value) => validatePrice(value),
-                     onSaved: (value) => pricePar = int.parse(value) ,
-
                   ),
                 ),
+              ],
+            ),
+            actions: [
+              FlatButton(
+                child: Text('تأكيد'),
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    if (pricePar != null && pricePar >= minPrice) {
+                      createSubCollectionForAucthion();
+                      Navigator.pop(context);
+                    }
+                    showCompleteAuctionDialog(context);
+                  }
+                },
               ),
             ],
           ),
-          actions: [
-            FlatButton(
-              child: Text('تأكيد'),
-              onPressed: (){
-                if(_formKey.currentState.validate()){
-                  _formKey.currentState.save();
-                  if(pricePar != null && pricePar >= minPrice){
-                    createSubCollectionForAucthion();
-                    Navigator.pop(context);
-                  }
-                  showCompleteAuctionDialog(context);
-                }
-
-              },
-            ),
-          ],
-        ),
         ),
       );
     }
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffF7F7F7),
       appBar: AppBar(
         title: Center(child: Text('منتج')),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xff4072AF),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -267,8 +221,6 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ),
               ),
-
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -382,19 +334,19 @@ class _DetailScreenState extends State<DetailScreen> {
                       if (authProvider.isAuthenticated) {
                         if (itemNotifier.currentItem.type == 'مزاد') {
                           final useId = FirebaseAuth.instance.currentUser.uid;
-                          if(useId != itemNotifier.currentItem.uid){
+                          if (useId != itemNotifier.currentItem.uid) {
                             _showDialog();
-                          }else{
+                          } else {
                             //
                             showOwnerDialog(context);
                           }
-
                         }
                         if (itemNotifier.currentItem.type == 'تبرع') {
-                          if(FirebaseAuth.instance.currentUser.uid !=itemNotifier.currentItem.uid ){
+                          if (FirebaseAuth.instance.currentUser.uid !=
+                              itemNotifier.currentItem.uid) {
                             createSubCollectionForDonating();
                             showDonatingDialog(context);
-                          }else{
+                          } else {
                             showOwnerDialog(context);
                           }
                         }
@@ -475,6 +427,7 @@ class _DetailScreenState extends State<DetailScreen> {
       },
     );
   }
+
 // dialog for the owner
   showOwnerDialog(BuildContext context) {
     // Create button
@@ -490,8 +443,7 @@ class _DetailScreenState extends State<DetailScreen> {
       title: Directionality(
           child: Text("غير مسموح"), textDirection: TextDirection.rtl),
       content: Directionality(
-          child: Text(
-              "لايمكن لصاحب المنتج المشاركة "),
+          child: Text("لايمكن لصاحب المنتج المشاركة "),
           textDirection: TextDirection.rtl),
       actions: [
         okButton,
@@ -506,6 +458,7 @@ class _DetailScreenState extends State<DetailScreen> {
       },
     );
   }
+
 // dialog for complete auction process
   showCompleteAuctionDialog(BuildContext context) {
     // Create button
@@ -521,8 +474,7 @@ class _DetailScreenState extends State<DetailScreen> {
       title: Directionality(
           child: Text("تمت عملية المزايدة"), textDirection: TextDirection.rtl),
       content: Directionality(
-          child: Text(
-              "مشاركنك تمت وسيتم اعلامك في حال كان المنتج من نصيبك"),
+          child: Text("مشاركنك تمت وسيتم اعلامك في حال كان المنتج من نصيبك"),
           textDirection: TextDirection.rtl),
       actions: [
         okButton,
@@ -537,9 +489,8 @@ class _DetailScreenState extends State<DetailScreen> {
       },
     );
   }
-
-
 }
+
 class _SystemPadding extends StatelessWidget {
   final Widget child;
 
@@ -554,17 +505,15 @@ class _SystemPadding extends StatelessWidget {
         child: child);
   }
 }
+
 class sendEmailFromLocalHost extends StatefulWidget {
   @override
   _sendEmailFromLocalHostState createState() => _sendEmailFromLocalHostState();
 }
 
 class _sendEmailFromLocalHostState extends State<sendEmailFromLocalHost> {
-
-
   @override
   Widget build(BuildContext context) {
     return Container();
   }
 }
-
