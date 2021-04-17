@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           width: MediaQuery.of(context).size.width,
                           color: Color(0xffF7F7F7),
-                          height: MediaQuery.of(context).size.height * 0.30,
+                          height: MediaQuery.of(context).size.height * 0.36,
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -165,7 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 20,
                                     ),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Container(
                                           child: TextButton(
@@ -192,7 +193,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ),
                                           ),
                                           onPressed: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ResetPasswordScreen()));
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ResetPasswordScreen()));
                                           },
                                         )),
                                       ],
