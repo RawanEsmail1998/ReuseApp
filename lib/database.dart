@@ -14,6 +14,8 @@ class Database {
       'City': city,
       'uid': uid,
       'email': email,
+      'role': 'normal user',
+      'In-active':true,
     });
   }
 

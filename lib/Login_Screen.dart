@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:reuse_app/Home_Screen.dart';
+import 'package:reuse_app/adminDashbord.dart';
 import 'package:reuse_app/resetPassword.dart';
 import 'RegistrationScreen.dart';
 import 'auth_provider.dart';
@@ -15,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _password;
   String email;
   String error = '';
+  List adminUsers = [];
   final _formKey = GlobalKey<FormState>();
   AuthProvider _auth = AuthProvider();
   User user = FirebaseAuth.instance.currentUser;
@@ -228,10 +231,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                               if (!_auth.isAuthenticated) {
                                                 setState(() => error =
                                                     'كلمة المرور أو البريد الإلكتروني غير صحيحة');
-                                              } else {
-                                                Navigator.pushNamed(
-                                                    context, HomeScreen.id);
+                                              } if(_auth.isAuthenticated ){
+                                                DocumentSnapshot document =  await FirebaseFirestore.instance.collection('users').doc(_auth.user.uid).get();
+                                                if(document.data()['role'] =='Admin'){
+                                                  Navigator.pushNamed(context, AdminDashboard.id);
+                                                }else if(document.data()['role'] == 'normal user' && document.data()['In-active'] == true ){
+                                                  Navigator.pushNamed(context, HomeScreen.id);
+                                                }else if(document.data()['role'] == 'normal user' && document.data()['In-active'] == false){
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                    content: Text('تم حظرك من قبل ادارة التطبيق لن تتمكن من تسجيل الدخول'),
+                                                  ));
+                                                }
                                               }
+
                                             }
                                           },
                                           padding: EdgeInsets.all(16),

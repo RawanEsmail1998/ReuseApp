@@ -3,14 +3,13 @@ import 'package:flutter/gestures.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'package:reuse_app/add_item2.dart';
 import 'package:reuse_app/detailsScreen.dart';
 import 'package:reuse_app/item_notifier.dart';
 import 'package:filter_list/filter_list.dart';
+import 'package:reuse_app/visitorHomeScreen.dart';
 import 'dart:core';
 import 'add_item1.dart';
 import 'auth_provider.dart';
-import 'Login_Screen.dart';
 import 'Menu.dart';
 import 'allmessages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +20,9 @@ import 'myproducts.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'Home_Screen';
+  // bool isActive ;
+  // bool isAdmin ;
+  // HomeScreen({this.isActive, this.isAdmin});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -40,8 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int duration;
   List<String> countList = ['اثاث منزل','ادوات مطبخ','اجهزة'] ;
   List<String> selectedCountList = [];
-  CollectionReference colitems =
-      FirebaseFirestore.instance.collection('donatedItems');
+
   void initState() {
     ItemNotifier itemNotifier =
         Provider.of<ItemNotifier>(context, listen: false);
@@ -56,16 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context);
 
-//  int updateList(){
-//   if(length == null){
-//     length = itemNotifier.itemList.length;
-//   }else{
-//     setState(() {
-//       length ;
-//     });
-//   }
-//   return length ;
-// }
+
     void _openFilterDialog() async {
       await FilterListDialog.display(
           context,
@@ -99,13 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pop(context);
           });
     }
-    // void deleteProduct(int index){
-    //   date = itemNotifier.itemList[index].createdOn.toDate();
-    //   dateAfterAuction =  date.add(Duration(days: itemNotifier.itemList[index].duration));
-    //   if(dateAfterAuction.isAfter(DateTime.now())){
-    //     itemNotifier.itemList.removeAt(index);
-    //   }
-    // }
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -141,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Color(0xff4072AF)),
                   )),
                 ),
-                if (authProvider.isAuthenticated) ...[
                   ListWidget(
                     icon: Icons.account_circle_sharp,
                     text: 'ملفي الشخصي',
@@ -167,45 +152,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.close,
                     text: 'تسجيل الخروج',
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, VisitorHomeScreen.id);
                       authProvider.signOut();
                     },
                   ),
-                ],
-                if (!authProvider.isAuthenticated) ...[
-                  ListTile(
-                    leading: Icon(
-                      Icons.login,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      'تسجيل الدخول',
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onTap: () async {
-                      // go to the login screen..
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, LoginScreen.id);
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.app_registration,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      'انشاء حساب',
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onTap: () async {
-                      // go to the login screen..
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, RegistrationScreen.id);
-                    },
-                  ),
-                ],
+
+
               ],
             ),
           ),
@@ -252,29 +204,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               physics: BouncingScrollPhysics(),
                                 dragStartBehavior: DragStartBehavior.start,
                                 clipBehavior: Clip.hardEdge,
-                              itemCount: length == null? itemNotifier.itemList.length:length,
+                              itemCount: itemNotifier.itemList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 String name = itemNotifier.itemList[index].name;
                                 String cat = itemNotifier.itemList[index].category;
+                                bool notClose = itemNotifier.itemList[index].notClosed;
                                 if(itemNotifier.itemList[index].type == 'مزاد'){
                                    duration = itemNotifier.itemList[index].duration ;
                                   Timestamp  date = itemNotifier.itemList[index].createdOn;
                                   dateAfterAuction = date.toDate().add( new Duration(days: duration,hours: 0,minutes: 0,milliseconds: 0 ));
-                                   if( dateAfterAuction.isBefore(DateTime.now()) && duration !=null ){
-                                     print(dateAfterAuction);
-
-
-
-                                  //    name = itemNotifier.itemList[index].name;
-                                  //    img =itemNotifier.itemList[index].image[0];
-                                  //  String  type  = itemNotifier.itemList[index].type;
-                                  // String   city = itemNotifier.itemList[index].city;
-
-                                   }
                                 }
 
                                // var dateAfterAuction =  date.add();
-                               if( dateAfterAuction != DateTime.now() && DateTime.now().isBefore(dateAfterAuction)) {
+                               if(notClose == true) {
                                  print(dateAfterAuction);
                                  if (name.contains(searshBar)) {
                                    if (selectedCountList.contains(cat) ||
@@ -498,7 +440,6 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (authProvider.isAuthenticated) ...[
                  Center(
                    child: FloatingActionButton(
                     child: Icon(
@@ -514,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                  ),
             ],
-          ],
+
         ),
 
 

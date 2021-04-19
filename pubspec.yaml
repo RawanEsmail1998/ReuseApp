@@ -44,7 +44,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   filter_list: ^0.0.8
   firebase_messaging: "^8.0.0-dev.15"
-  mailer: ^3.2.1
+  mailer2: ^1.2.5
   flutter_local_notifications: ^4.0.1+2
 
 dev_dependencies:

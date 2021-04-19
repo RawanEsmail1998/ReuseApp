@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:reuse_app/item_notifier.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'auth_provider.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
+
 
 class DetailScreen extends StatefulWidget {
   static String id = 'Item';
@@ -64,42 +63,13 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
-  // sendEmail() async{
-  //   String username = 'username@gmail.com';
-  //   String password = 'password';
-  //   final smtpServer = gmailSaslXoauth2(username,password);
-  //   final message = Message()
-  //     ..from = Address(username, 'Reuse App')
-  //     ..recipients.add(Emails)
-  //     ..subject = 'نتيجة المزاد ${DateTime.now()}'
-  //     ..text = 'نبارك لك لقد فزت بالمزاد';
-  //   try {
-  //     final sendReport = await send(message, smtpServer);
-  //     print('Message sent: ' + sendReport.toString());
-  //   } on MailerException catch (e) {
-  //     print('Message not sent.');
-  //     for (var p in e.problems) {
-  //       print('Problem: ${p.code}: ${p.msg}');
-  //     }
-  //   }
-  // }
+
   @override
   Widget build(BuildContext context) {
     ItemNotifier itemNotifier =
         Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    // date = itemNotifier.currentItem.createdOn.subtract(Duration(days: itemNotifier.currentItem.duration));
-    //  getItems() async {
-    //    if(date.isAfter(DateTime.now())) {
-    //      QuerySnapshot snapshot = await _donatedItems.doc(docId).collection('acutioneer').where('price',isGreaterThanOrEqualTo: pricePar).get();
-    //      snapshot.docs.forEach((document) {
-    //        email = document.data()['email'];
-    //        Emails.add(email);
-    //
-    //      });
-    //    }
-    //  }
-
+    date = itemNotifier.currentItem.createdOn.toDate().add(new Duration(days: itemNotifier.currentItem.duration));
     String validatePrice(String value) {
       setState(() {
         minPrice = int.parse(itemNotifier.currentItem.price);
@@ -261,7 +231,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           color: Color(0xFF027843),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Icon(
                               Icons.monetization_on_outlined,
@@ -277,6 +247,20 @@ class _DetailScreenState extends State<DetailScreen> {
                     ],
                   ),
                 ),
+              ],
+              if(itemNotifier.currentItem.type == 'مزاد')...[
+                Padding(
+                  padding:  EdgeInsets.all(4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text('ينتهي في${date.day+1}-${date.month}-${date.year}' , style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 16.0
+                      ),)
+                    ],
+                  ),
+                )
               ],
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -303,58 +287,45 @@ class _DetailScreenState extends State<DetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // RaisedButton(
-                  //   shape: StadiumBorder(),
-                  //   color: Color(0xFF027843),
-                  //   child: Text('تواصل',
-                  //       style: TextStyle(
-                  //         fontSize: 28,
-                  //         color: Colors.white,
-                  //       ),
-                  //       textAlign: TextAlign.center),
-                  //   onPressed: () {
-                  //     if (authProvider.isAuthenticated) {} // for chat leave it until the feature complete ..
-                  //     if (!authProvider.isAuthenticated) {
-                  //       showAlertDialog(context);
-                  //     }
-                  //   },
-                  // ),
-                  RaisedButton(
-                    shape: StadiumBorder(),
-                    color: Color(0xFF027843),
-                    child: Text(
-                      isAuction(), // donating or auction
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      shape: StadiumBorder(),
+                      color: Color(0xFF027843),
+                      child: Text(
+                        isAuction(), // donating or auction
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
+                      onPressed: () {
+                        if (authProvider.isAuthenticated) {
+                          if (itemNotifier.currentItem.type == 'مزاد') {
+                            final useId = FirebaseAuth.instance.currentUser.uid;
+                            if (useId != itemNotifier.currentItem.uid) {
+                              _showDialog();
+                            } else {
+                              //
+                              showOwnerDialog(context);
+                            }
+                          }
+                          if (itemNotifier.currentItem.type == 'تبرع') {
+                            if (FirebaseAuth.instance.currentUser.uid !=
+                                itemNotifier.currentItem.uid) {
+                              createSubCollectionForDonating();
+                              showDonatingDialog(context);
+                            } else {
+                              showOwnerDialog(context);
+                            }
+                          }
+                        }
+                        if (!authProvider.isAuthenticated) {
+                          showAlertDialog(context);
+                        }
+                      },
                     ),
-                    onPressed: () {
-                      if (authProvider.isAuthenticated) {
-                        if (itemNotifier.currentItem.type == 'مزاد') {
-                          final useId = FirebaseAuth.instance.currentUser.uid;
-                          if (useId != itemNotifier.currentItem.uid) {
-                            _showDialog();
-                          } else {
-                            //
-                            showOwnerDialog(context);
-                          }
-                        }
-                        if (itemNotifier.currentItem.type == 'تبرع') {
-                          if (FirebaseAuth.instance.currentUser.uid !=
-                              itemNotifier.currentItem.uid) {
-                            createSubCollectionForDonating();
-                            showDonatingDialog(context);
-                          } else {
-                            showOwnerDialog(context);
-                          }
-                        }
-                      }
-                      if (!authProvider.isAuthenticated) {
-                        showAlertDialog(context);
-                      }
-                    },
                   ),
                 ],
               )

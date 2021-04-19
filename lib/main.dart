@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reuse_app/Login_Screen.dart';
+import 'package:reuse_app/addAdminScreen.dart';
 import 'package:reuse_app/add_item1.dart';
 import 'package:reuse_app/add_item2.dart';
+import 'package:reuse_app/adminDashbord.dart';
+import 'package:reuse_app/archItemsScreen.dart';
+import 'package:reuse_app/detailsScreenForAdmin.dart';
 import 'package:reuse_app/item_notifier.dart';
-import 'package:reuse_app/myaccount.dart';
-import 'package:reuse_app/upload_images.dart';
+import 'package:reuse_app/visitorHomeScreen.dart';
 import 'Home_Screen.dart';
 import 'package:reuse_app/requests_page.dart';
-import 'package:reuse_app/upload_images.dart';
-import 'Home_Screen.dart';
 import 'bids_page.dart';
 import 'requests_page.dart';
 import 'RegistrationScreen.dart';
@@ -20,8 +21,6 @@ import 'myproducts.dart';
 import 'chatScreen.dart';
 import 'auth_provider.dart';
 import 'allmessages.dart';
-
-import 'auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,14 +48,18 @@ class ReuseApp extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: HomeScreen.id,
+          initialRoute: VisitorHomeScreen.id,
           routes: {
+            VisitorHomeScreen.id:(context) => VisitorHomeScreen(),
             LoginScreen.id: (context) => LoginScreen(),
+            AdminDashboard.id:(context)  => AdminDashboard(),
+            DetailsScreenForAdmin.id:(context)  =>DetailsScreenForAdmin(),
+            AddAdminScreen.id:(context)  => AddAdminScreen(),
+            ArchItemsScreen.id:(context)  => ArchItemsScreen(),
             RegistrationScreen.id: (context) => RegistrationScreen(),
             AddItem1.id: (context) => AddItem1(),
             AddItem.id: (context) => AddItem(),
             DonatedItem.id: (context) => DonatedItem(),
-            UploadImages.id: (context) => UploadImages(),
             HomeScreen.id: (context) => HomeScreen(),
             MyProducts.id: (context) => MyProducts(),
             RequestsPage.id: (context) => RequestsPage(),

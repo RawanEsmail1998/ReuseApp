@@ -12,7 +12,7 @@ class Items{
   String category;
   String uid ;
   Timestamp createdOn ;
-
+  bool notClosed ;
   Items.fromMap(Map<String , dynamic> data){
     name = data['name'];
     image = data['imageUrl'];
@@ -25,6 +25,7 @@ class Items{
     documentId = data['documentId'];
     uid = data['uid'] ;
     createdOn = data['createdOn'];
+    notClosed = data['notClosed'];
 
   }
 }

@@ -360,19 +360,27 @@ class _AddItemState extends State<AddItem> {
     }
     if (_validate != true && _image.isNotEmpty) {
       var v4 = uuid.v4() ;
-     _auctionItems.doc(v4).set({
-        'type': itemtype,
-        'uid': _uid,
-        'city': cityName,
-        'price': price,
-        'duration': duration,
-        'name': nameOfItem,
-        'details': details,
-         'category':category,
-        'imageUrl': _imageUrls ,
-        'createdOn' : Timestamp.now(),
-       'documentId' : v4,
-      });
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(_uid)
+          .get().then((value) =>
+          _auctionItems.doc(v4).set({
+            'type': itemtype,
+            'uid': _uid,
+            'city': cityName,
+            'price': price,
+            'duration': duration,
+            'name': nameOfItem,
+            'details': details,
+            'category':category,
+            'imageUrl': _imageUrls ,
+            'createdOn' : Timestamp.now(),
+            'documentId' : v4,
+            'Full_Name':value.data()['Full_Name'],
+            'notClosed':true,
+          }),
+      );
+
 
     }
   }

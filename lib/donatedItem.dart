@@ -273,6 +273,10 @@ class _DonatedItemState extends State<DonatedItem> {
     }
     if (_validate != true) {
       var v4 = uuid.v4() ;
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(_uid)
+          .get().then((value) =>
       _donatedItems.doc(v4).set({
         'type': 'تبرع',
         'uid': _uid,
@@ -283,7 +287,10 @@ class _DonatedItemState extends State<DonatedItem> {
         'category':category,
         'createdOn' : Timestamp.now(),
         'documentId' : v4,
-      });
+        'Full_Name':value.data()['Full_Name'],
+        'notClosed':true,
+      }),
+      );
     }
   }
 }

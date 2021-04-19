@@ -69,6 +69,7 @@ class _MyProductstState extends State<MyProducts> {
                             final itemname = document.data()['name'];
                             final itemid = document.data()['uid'];
                             final itemdocid = document.data()['documentId'];
+                            final status = document.data()['notClosed'];
                             // docId = document.id;
                             if (itemid == _uid) {
                               return Container(
@@ -154,6 +155,8 @@ class _MyProductstState extends State<MyProducts> {
                                                                 RequestsPage(
                                                                   docId:
                                                                       itemdocid,
+                                                                  nameOfProduct: itemname,
+                                                                  notClosed: status,
                                                                 )));
                                                   },
                                                   child: Row(
@@ -206,7 +209,9 @@ class _MyProductstState extends State<MyProducts> {
                             final itemname = document.data()['name'];
                             final itemid = document.data()['uid'];
                             final itemdocid = document.data()['documentId'];
-
+                            final duration = document.data()['duration'];
+                            final createdOn = document.data()['createdOn'];
+                            final status = document.data()['notClosed'];
                             if (itemid == _uid) {
                               return Container(
                                   width: 400,
@@ -292,6 +297,10 @@ class _MyProductstState extends State<MyProducts> {
                                                                     BidsPage(
                                                                       docId:
                                                                           itemdocid,
+                                                                      nameOfProduct: itemname,
+                                                                      duration: duration,
+                                                                      createdOn: createdOn,
+                                                                      notClosed: status,
                                                                     )));
                                                   },
                                                   child: Row(
