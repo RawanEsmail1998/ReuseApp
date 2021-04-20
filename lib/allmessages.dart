@@ -30,8 +30,9 @@ class _AllmessagesState extends State<Allmessages> {
           body: StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('messages')
-                  .where('allUsers', arrayContains: _uid)
-                  .snapshots(),
+                  .where('allUsers', arrayContains: [
+                _uid,
+              ]).snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(

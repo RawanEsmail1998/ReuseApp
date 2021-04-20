@@ -10,21 +10,28 @@ import 'chatScreen.dart';
 
 class BidsPage extends StatefulWidget {
   static String id = 'RequestsPage';
-  String nameOfProduct ;
-  int duration ;
+  String nameOfProduct;
+  int duration;
   Timestamp createdOn;
-  bool notClosed ;
+  bool notClosed;
   // String docId;
   String uid = FirebaseAuth.instance.currentUser.uid;
   final String docId;
-  BidsPage({Key key, @required this.docId ,this.nameOfProduct,this.duration , this.createdOn,this.notClosed}) : super(key: key);
+  BidsPage(
+      {Key key,
+      @required this.docId,
+      this.nameOfProduct,
+      this.duration,
+      this.createdOn,
+      this.notClosed})
+      : super(key: key);
   @override
   _BidsPageState createState() => _BidsPageState();
 }
 
 class _BidsPageState extends State<BidsPage> {
-  bool disabledButt = false ;
-  DateTime dateAfterAuction ;
+  bool disabledButt = false;
+  DateTime dateAfterAuction;
   AuthProvider authProvider;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
@@ -38,21 +45,23 @@ class _BidsPageState extends State<BidsPage> {
   }
 
   bool convExist = false;
-  sendEmail(String userEmail) async{
+  sendEmail(String userEmail) async {
     var options = new GmailSmtpOptions()
       ..username = 'reuseapp0@gmail.com'
       ..password = 'r0w21E5Nfoiy';
     var emailTransport = new SmtpTransport(options);
     final message = Envelope()
-      ..from =  'reuseapp0@gmail.com'
+      ..from = 'reuseapp0@gmail.com'
       ..recipients.add(userEmail)
       ..subject = 'نتيجة التبرع ب ${widget.nameOfProduct}'
       ..text = 'تم قبول طلبكم وسيتم التواصل معكم من قبل صاحب المنتج';
     // Email it.
-    emailTransport.send(message)
+    emailTransport
+        .send(message)
         .then((envelope) => print('message sent'))
         .catchError((e) => print('Error occurred: $e'));
   }
+
   Widget build(BuildContext context) {
     var docId = this.widget.docId;
     return SafeArea(
@@ -85,7 +94,7 @@ class _BidsPageState extends State<BidsPage> {
                   );
                 } else {
                   return ListView.builder(
-                       shrinkWrap: true,
+                      shrinkWrap: true,
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (context, index) {
                         DocumentSnapshot document = snapshot.data.docs[index];
@@ -94,164 +103,171 @@ class _BidsPageState extends State<BidsPage> {
                         final userCity = document.data()['city'];
                         final userbid = document.data()['price'];
                         final userEmail = document.data()['email'];
-                        dateAfterAuction  = widget.createdOn.toDate().add(new Duration(days: widget.duration));
-                          if(dateAfterAuction.isBefore(DateTime.now())){
-                            return Container(
-                                width: 400,
-                                height: 140,
-                                padding: const EdgeInsets.all(5.0),
-                                margin: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(7),
-                                    color: Colors.teal[100],
-                                    border: Border.all(
-                                      width: 0.5,
-                                      color: Colors.blueGrey,
-                                    )),
-                                child: Column(children: [
-                                  Text(
-                                    '$userName',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                    ),
+                        dateAfterAuction = widget.createdOn
+                            .toDate()
+                            .add(new Duration(days: widget.duration));
+                        if (dateAfterAuction.isBefore(DateTime.now())) {
+                          return Container(
+                              width: 400,
+                              height: 140,
+                              padding: const EdgeInsets.all(5.0),
+                              margin: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(7),
+                                  color: Colors.teal[100],
+                                  border: Border.all(
+                                    width: 0.5,
+                                    color: Colors.blueGrey,
+                                  )),
+                              child: Column(children: [
+                                Text(
+                                  '$userName',
+                                  style: TextStyle(
+                                    fontSize: 25,
                                   ),
-                                  Text('بمبلغ:$userbid',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
-                                  Text('$userCity'),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                    children: [
-                                      FlatButton(
-                                        onPressed:disabledButt? null: (){
-                                            setState(() {
-                                              disabledButt == true ;
-                                            });
-                                          sendEmail(userEmail);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text('تم ارسال الرسالة لصاحب الطلب'),
-                                          ));
-                                          if(widget.notClosed == true){
-                                            FirebaseFirestore.instance.collection('auctionItems').doc(docId).update({'notClosed':false}).catchError((e) => print(e));
-                                          }
-                                        },
-                                        disabledColor: Color(0xFF0B5345),
+                                ),
+                                Text('بمبلغ:$userbid',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                                Text('$userCity'),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    FlatButton(
+                                      onPressed: disabledButt
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                disabledButt == true;
+                                              });
+                                              sendEmail(userEmail);
+                                              Scaffold.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'تم ارسال الرسالة لصاحب الطلب'),
+                                              ));
+                                              if (widget.notClosed == true) {
+                                                FirebaseFirestore.instance
+                                                    .collection('auctionItems')
+                                                    .doc(docId)
+                                                    .update({
+                                                  'notClosed': false
+                                                }).catchError((e) => print(e));
+                                              }
+                                            },
+                                      disabledColor: Color(0xFF0B5345),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(30.0)),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(3.0),
+                                              child: Icon(
+                                                  Icons.check_box_outlined,
+                                                  color: Colors.white),
+                                            ),
+                                            Text(
+                                              'بيع المنتج',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20),
+                                            ),
+                                          ]),
+                                    ),
+                                    FlatButton(
+                                        color: Color(0xFF0B5345),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            new BorderRadius.circular(30.0)),
+                                                new BorderRadius.circular(
+                                                    30.0)),
+                                        onPressed: () async {
+                                          await FirebaseFirestore.instance
+                                              .collection('messages')
+                                              .where('allUsers',
+                                                  arrayContains: [
+                                                    _uid,
+                                                    receiverId
+                                                  ])
+                                              .get()
+                                              .then((value) {
+                                                if (value.docs.length < 1) {
+                                                  setState(() {
+                                                    convExist = false;
+                                                    docId = documentId(
+                                                        FirebaseAuth.instance
+                                                            .currentUser.uid,
+                                                        receiverId);
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    convExist = true;
+                                                    docId = value.docs.first.id;
+                                                  });
+                                                }
+                                              });
+                                          if (convExist) {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ChatScreen(
+                                                            receiverId:
+                                                                receiverId,
+                                                            docId: docId)));
+                                          } else {
+                                            _firestore
+                                                .collection('messages')
+                                                .doc(docId)
+                                                .set({
+                                              'lastmessage': '',
+                                              'sender': FirebaseAuth
+                                                  .instance.currentUser.uid,
+                                              'receiver': receiverId,
+                                              'isRead': false,
+                                              'time': DateTime.now(),
+                                              'allUsers': [
+                                                FirebaseAuth
+                                                    .instance.currentUser.uid,
+                                                receiverId
+                                              ],
+                                            }).then((value) => {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ChatScreen(
+                                                                      receiverId:
+                                                                          receiverId,
+                                                                      docId:
+                                                                          docId)))
+                                                    });
+                                          }
+                                        },
                                         child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             children: [
-                                              Padding(
-                                                padding:
-                                                const EdgeInsets.all(3.0),
-                                                child: Icon(
-                                                    Icons.check_box_outlined,
-                                                    color: Colors.white),
-                                              ),
+                                              Icon(Icons.message,
+                                                  color: Colors.white),
                                               Text(
-                                                'بيع المنتج',
+                                                'محادثة خاصة',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 20),
                                               ),
-                                            ]),
-                                      ),
-                                      FlatButton(
-                                          color: Color(0xFF0B5345),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              new BorderRadius.circular(30.0)),
-                                          onPressed: () async {
-                                            await FirebaseFirestore.instance
-                                                .collection('messages')
-                                                .where('allUsers', arrayContains: [
-                                              _uid,
-                                              receiverId
-                                            ])
-                                                .get()
-                                                .then((value) {
-                                              if (value.docs.length < 1) {
-                                                setState(() {
-                                                  convExist = false;
-                                                  docId = documentId(
-                                                      FirebaseAuth.instance
-                                                          .currentUser.uid,
-                                                      receiverId);
-                                                });
-                                              } else {
-                                                setState(() {
-                                                  convExist = true;
-                                                  docId = value.docs.first.id;
-                                                });
-                                              }
-                                            }
-
-                                            );
-                                            if (convExist) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ChatScreen(
-                                                              receiverId:
-                                                              receiverId,
-                                                              docId: docId)));
-                                            } else {
-                                              _firestore
-                                                  .collection('messages')
-                                                  .doc(docId)
-                                                  .set({
-                                                'lastmessage': '',
-                                                'sender': FirebaseAuth
-                                                    .instance.currentUser.uid,
-                                                'receiver': receiverId,
-                                                'isRead': false,
-                                                'time': DateTime.now(),
-                                                'allUsers': [
-                                                  FirebaseAuth
-                                                      .instance.currentUser.uid,
-                                                  receiverId
-                                                ],
-                                              }).then((value) => {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ChatScreen(
-                                                                receiverId:
-                                                                receiverId,
-                                                                docId:
-                                                                docId)))
-                                              });
-                                            }
-                                          },
-                                          child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.message,
-                                                    color: Colors.white),
-                                                Text(
-                                                  'محادثة خاصة',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
-                                                ),
-                                              ])),
-                                    ],
-                                  ),
-                                ])
-                            );
-
-                          }else
-                            return Text('بالانتظار....');
-
+                                            ])),
+                                  ],
+                                ),
+                              ]));
+                        } else
+                          return Text('بالانتظار....');
                       });
                   //   for (var item in myitem) {
                   //

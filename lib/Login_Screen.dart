@@ -231,20 +231,39 @@ class _LoginScreenState extends State<LoginScreen> {
                                               if (!_auth.isAuthenticated) {
                                                 setState(() => error =
                                                     'كلمة المرور أو البريد الإلكتروني غير صحيحة');
-                                              } if(_auth.isAuthenticated ){
-                                                DocumentSnapshot document =  await FirebaseFirestore.instance.collection('users').doc(_auth.user.uid).get();
-                                                if(document.data()['role'] =='Admin'){
-                                                  Navigator.pushNamed(context, AdminDashboard.id);
-                                                }else if(document.data()['role'] == 'normal user' && document.data()['In-active'] == true ){
-                                                  Navigator.pushNamed(context, HomeScreen.id);
-                                                }else if(document.data()['role'] == 'normal user' && document.data()['In-active'] == false){
-                                                  ScaffoldMessenger.of(context)
+                                              }
+                                              if (_auth.isAuthenticated) {
+                                                DocumentSnapshot document =
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('users')
+                                                        .doc(_auth.user.uid)
+                                                        .get();
+                                                if (document.data()['role'] ==
+                                                    'Admin') {
+                                                  Navigator.pushNamed(context,
+                                                      AdminDashboard.id);
+                                                } else if (document
+                                                            .data()['role'] ==
+                                                        'normal user' &&
+                                                    document.data()[
+                                                            'In-active'] ==
+                                                        true) {
+                                                  Navigator.pushNamed(
+                                                      context, HomeScreen.id);
+                                                } else if (document
+                                                            .data()['role'] ==
+                                                        'normal user' &&
+                                                    document.data()[
+                                                            'In-active'] ==
+                                                        false) {
+                                                  Scaffold.of(context)
                                                       .showSnackBar(SnackBar(
-                                                    content: Text('تم حظرك من قبل ادارة التطبيق لن تتمكن من تسجيل الدخول'),
+                                                    content: Text(
+                                                        'تم حظرك من قبل ادارة التطبيق لن تتمكن من تسجيل الدخول'),
                                                   ));
                                                 }
                                               }
-
                                             }
                                           },
                                           padding: EdgeInsets.all(16),
