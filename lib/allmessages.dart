@@ -17,7 +17,25 @@ class _AllmessagesState extends State<Allmessages> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
   String _uid = FirebaseAuth.instance.currentUser.uid;
-  Stream users = FirebaseFirestore.instance.collection('users').snapshots();
+  var users = FirebaseFirestore.instance.collection('users');
+  String senderName = '';
+  String receiverName = '';
+
+  getSenderName(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        senderName = value.data()['Full_Name'];
+      });
+    });
+  }
+
+  getReceiverName(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        receiverName = value.data()['Full_Name'];
+      });
+    });
+  }
 
   Widget build(BuildContext context) {
     return SafeArea(
@@ -30,9 +48,8 @@ class _AllmessagesState extends State<Allmessages> {
           body: StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('messages')
-                  .where('allUsers', arrayContains: [
-                _uid,
-              ]).snapshots(),
+                  .where('allUsers', arrayContains: _uid)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -43,9 +60,18 @@ class _AllmessagesState extends State<Allmessages> {
                         String theReceiver = document.data()['receiver'];
                         String lastMessage = document.data()['lastmessage'];
                         String docId = document.id;
+                        // String senderName = getName(theSender);
+                        // String receiverName = getName(theReceiver);
+                        // is the sender me ?
+                        getReceiverName(theReceiver);
+                        getSenderName(theSender);
+                        bool isMe = _uid == theSender ? true : false;
 
                         return ListTile(
-                          title: Text(theSender),
+                          title: Text(
+                            isMe ? receiverName : senderName,
+                            style: TextStyle(fontSize: 20),
+                          ),
                           trailing: Text(lastMessage),
                           onTap: () {
                             Navigator.push(
@@ -59,7 +85,9 @@ class _AllmessagesState extends State<Allmessages> {
                         );
                       });
                 } else
-                  return SizedBox();
+                  return SizedBox(
+                    child: Text('لا يوجد رسائل '),
+                  );
               })),
     );
   }

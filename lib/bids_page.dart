@@ -109,7 +109,7 @@ class _BidsPageState extends State<BidsPage> {
                         if (dateAfterAuction.isBefore(DateTime.now())) {
                           return Container(
                               width: 400,
-                              height: 140,
+                              height: 160,
                               padding: const EdgeInsets.all(5.0),
                               margin: const EdgeInsets.all(6),
                               decoration: BoxDecoration(

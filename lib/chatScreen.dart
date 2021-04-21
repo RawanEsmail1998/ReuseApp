@@ -116,14 +116,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                 snapshot.data.docs[index];
                             String message = document.data()['content'];
                             String senderid = document.data()['fromId'];
-                            String ReciverId = document.data()['toId'];
                             final imageurl = document.data()['image'];
                             final Timestamp timestamp =
                                 document.data()['timeStamp'] as Timestamp;
                             final DateTime dateTime = timestamp.toDate();
                             final dateString =
                                 DateFormat('K:mm').format(dateTime);
-                            bool isMe = _uid != senderid;
+                            bool isMe = senderid == _uid ? true : false;
                             if (imageurl == null) {
                               return Padding(
                                   padding: EdgeInsets.all(5.0),
@@ -237,9 +236,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             .add({
                           'content': messageTextController.text,
                           'fromId': FirebaseAuth.instance.currentUser.uid,
-                          'toId': widget.receiverId,
                           'image': imageUrl,
                           'timeStamp': DateTime.now()
+                        });
+                        _firestore
+                            .collection('messages')
+                            .doc(widget.docId)
+                            .update({
+                          'lastmessage': messageTextController.text,
                         });
                         messageTextController.clear();
                       },
