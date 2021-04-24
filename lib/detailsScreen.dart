@@ -6,9 +6,10 @@ import 'package:reuse_app/item_notifier.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'auth_provider.dart';
 
-
 class DetailScreen extends StatefulWidget {
   static String id = 'Item';
+  String docId;
+  DetailScreen({this.docId});
   @override
   _DetailScreenState createState() => _DetailScreenState();
 }
@@ -63,13 +64,14 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     ItemNotifier itemNotifier =
         Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    date = itemNotifier.currentItem.createdOn.toDate().add(new Duration(days: itemNotifier.currentItem.duration));
+    date = itemNotifier.currentItem.createdOn
+        .toDate()
+        .add(new Duration(days: itemNotifier.currentItem.duration));
     String validatePrice(String value) {
       setState(() {
         minPrice = int.parse(itemNotifier.currentItem.price);
@@ -157,11 +159,10 @@ class _DetailScreenState extends State<DetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(child: Text('منتج')),
-        backgroundColor: Color(0xff4072AF),
-      ),
+          title: Center(child: Text(itemNotifier.currentItem.name)),
+          backgroundColor: Colors.blue),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -248,16 +249,16 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ),
               ],
-              if(itemNotifier.currentItem.type == 'مزاد')...[
+              if (itemNotifier.currentItem.type == 'مزاد') ...[
                 Padding(
-                  padding:  EdgeInsets.all(4.0),
+                  padding: EdgeInsets.all(4.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('ينتهي في${date.day+1}-${date.month}-${date.year}' , style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16.0
-                      ),)
+                      Text(
+                        'ينتهي في${date.day + 1}-${date.month}-${date.year}',
+                        style: TextStyle(color: Colors.red, fontSize: 16.0),
+                      )
                     ],
                   ),
                 )

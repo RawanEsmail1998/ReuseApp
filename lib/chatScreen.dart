@@ -15,7 +15,6 @@ import 'package:intl/date_symbol_data_local.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 AuthProvider authProvider;
 User loggedUser;
-
 String _uid = FirebaseAuth.instance.currentUser.uid;
 
 class ChatScreen extends StatefulWidget {
@@ -105,7 +104,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       );
                     }
-                    final messages = snapshot.data.docs.reversed;
                     return Expanded(
                       child: ListView.builder(
                           itemCount: snapshot.data.docs.length,

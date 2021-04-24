@@ -6,6 +6,7 @@ import 'auth_provider.dart';
 import 'package:reuse_app/Home_Screen.dart';
 
 class MyProfile extends StatefulWidget {
+  TextEditingController _controller;
   static String id = 'MyProfile';
 
   @override
@@ -13,6 +14,15 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
+  final myController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
   AuthProvider authProvider;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
@@ -126,11 +136,28 @@ class _MyProfileState extends State<MyProfile> {
                           alignment: Alignment.centerRight,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              username,
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 20),
-                            ),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.teal,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      TextField(
+                                        controller: myController,
+                                      );
+                                    },
+                                  ),
+                                  Text(
+                                    username,
+                                    style: TextStyle(
+                                        color: Colors.white70, fontSize: 20),
+                                  ),
+                                ]),
                           ),
                         ),
                         decoration: BoxDecoration(
@@ -212,13 +239,13 @@ class _MyProfileState extends State<MyProfile> {
                             child: Text(
                               'حفظ',
                               style: TextStyle(
-                                  color: Colors.white70,
+                                  color: Colors.white,
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
                           decoration: BoxDecoration(
-                              color: Colors.deepOrange,
+                              color: Colors.teal,
                               borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(30),
                               )),

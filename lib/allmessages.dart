@@ -67,22 +67,65 @@ class _AllmessagesState extends State<Allmessages> {
                         getSenderName(theSender);
                         bool isMe = _uid == theSender ? true : false;
 
-                        return ListTile(
-                          title: Text(
-                            isMe ? receiverName : senderName,
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          trailing: Text(lastMessage),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatScreen(
-                                          docId: docId,
-                                          receiverId: theReceiver,
-                                        )));
-                          },
-                        );
+                        return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatScreen(
+                                            docId: docId,
+                                            receiverId: theReceiver,
+                                          )));
+                            },
+                            child: Container(
+                              width: 400,
+                              height: 70,
+                              padding: const EdgeInsets.all(3),
+                              margin: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                    width: 0.6,
+                                    color: Colors.blueGrey,
+                                  )),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  children: [
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            isMe
+                                                ? ';$receiverName'
+                                                : ';$senderName',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.indigo),
+                                          ),
+                                          Text(
+                                            '$lastMessage:',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.black54),
+                                          ),
+                                        ]),
+                                    CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      backgroundImage:
+                                          AssetImage('images/personimage.png'),
+                                      radius: 28,
+                                    ),
+                                  ]),
+                            ));
                       });
                 } else
                   return SizedBox(
