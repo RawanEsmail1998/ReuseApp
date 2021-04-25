@@ -351,9 +351,6 @@ class _AddItemState extends State<AddItem> {
         setState(() {
           _imageUrls.add(imageUrl);
         });
-
-
-
           i++;
         });
 

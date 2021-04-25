@@ -45,30 +45,36 @@ class _AddItem1State extends State<AddItem1> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      ListTile(
-                        leading: Radio(
+                      Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: ListTile(
+                          leading: Radio(
+                              onChanged: (value) {
+                                OnTypeChanged(value);
+                              },
+                              groupValue: itemtype,
+                              value: 'auctionitem'),
+                          title: const Text('مزاد',
+                              style: TextStyle(
+                                fontSize: 20,
+                              )),
+                        ),
+                      ),
+                      Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: ListTile(
+                          leading: Radio(
+                            groupValue: itemtype,
+                            value: 'donateditem',
                             onChanged: (value) {
                               OnTypeChanged(value);
                             },
-                            groupValue: itemtype,
-                            value: 'auctionitem'),
-                        title: const Text('مزاد',
-                            style: TextStyle(
-                              fontSize: 20,
-                            )),
-                      ),
-                      ListTile(
-                        leading: Radio(
-                          groupValue: itemtype,
-                          value: 'donateditem',
-                          onChanged: (value) {
-                            OnTypeChanged(value);
-                          },
+                          ),
+                          title: const Text('تبرع',
+                              style: TextStyle(
+                                fontSize: 20,
+                              )),
                         ),
-                        title: const Text('تبرع',
-                            style: TextStyle(
-                              fontSize: 20,
-                            )),
                       ),
                     ],
                   ),

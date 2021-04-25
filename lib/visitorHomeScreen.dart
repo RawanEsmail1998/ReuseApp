@@ -180,7 +180,6 @@ class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
                         //     crossAxisCount: 2,
                         //   childAspectRatio: 1.0
                         // ),
-                        controller: ScrollController(keepScrollOffset: false),
                         physics: BouncingScrollPhysics(),
                         dragStartBehavior: DragStartBehavior.start,
                         clipBehavior: Clip.hardEdge,

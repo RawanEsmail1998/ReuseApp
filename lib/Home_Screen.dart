@@ -194,13 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Directionality(
                             textDirection: TextDirection.rtl,
                             child: ListView.builder(
-
                               shrinkWrap: true,
-                              // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              //     crossAxisCount: 2,
-                              //   childAspectRatio: 1.0
-                              // ),
-                              controller: ScrollController(keepScrollOffset: false),
                               physics: BouncingScrollPhysics(),
                                 dragStartBehavior: DragStartBehavior.start,
                                 clipBehavior: Clip.hardEdge,
@@ -214,8 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Timestamp  date = itemNotifier.itemList[index].createdOn;
                                   dateAfterAuction = date.toDate().add( new Duration(days: duration,hours: 0,minutes: 0,milliseconds: 0 ));
                                 }
-
-                               // var dateAfterAuction =  date.add();
                                if(notClose == true) {
                                  print(dateAfterAuction);
                                  if (name.contains(searshBar)) {

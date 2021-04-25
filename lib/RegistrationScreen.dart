@@ -90,7 +90,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           title: Center(
             child: Text('Reuse'),
           ),
-          backgroundColor: Color(0xff4072AF),
+          backgroundColor: Colors.blue,
         ),
         body: SingleChildScrollView(
           child: Form(

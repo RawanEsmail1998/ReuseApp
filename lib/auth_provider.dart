@@ -79,21 +79,14 @@ getItem(ItemNotifier itemNotifier) async{
  QuerySnapshot snapshot2 =  await FirebaseFirestore.instance.collection('donatedItems').get();
 List<Items> _itemList = [];
 snapshot.docs.forEach((document) {
-
 Items item = Items.fromMap(document.data());
 _itemList.add(item);
 itemNotifier.itemList = _itemList ;
-
 });
 snapshot2.docs.forEach((document) {
-
   Items item = Items.fromMap(document.data());
- // _itemList.insert(path, item);
   _itemList.add(item);
   itemNotifier.itemList = _itemList ;
-
-
 });
-
 
 }

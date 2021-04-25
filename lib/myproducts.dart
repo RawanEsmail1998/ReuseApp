@@ -230,7 +230,7 @@ class _MyProductstState extends State<MyProducts> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
-                                          'اسم المنتج: $itemname',
+                                          'اسم المنتج:$itemname',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blue[900],

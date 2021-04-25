@@ -232,7 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 setState(() => error =
                                                     'كلمة المرور أو البريد الإلكتروني غير صحيحة');
                                               } if(_auth.isAuthenticated ){
-                                                DocumentSnapshot document =  await FirebaseFirestore.instance.collection('users').doc(_auth.user.uid).get();
+                                                DocumentSnapshot document =  await FirebaseFirestore.instance.collection('users')
+                                                    .doc(_auth.user.uid).get();
                                                 if(document.data()['role'] =='Admin'){
                                                   Navigator.pushNamed(context, AdminDashboard.id);
                                                 }else if(document.data()['role'] == 'normal user' && document.data()['In-active'] == true ){

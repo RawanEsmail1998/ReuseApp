@@ -121,104 +121,81 @@ class _BidsPageState extends State<BidsPage> {
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold)),
                                   Text('$userCity'),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                    children: [
-                                      FlatButton(
-                                        onPressed:disabledButt? null: (){
-                                            setState(() {
-                                              disabledButt == true ;
-                                            });
-                                          sendEmail(userEmail);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text('تم ارسال الرسالة لصاحب الطلب'),
-                                          ));
-                                          if(widget.notClosed == true){
-                                            FirebaseFirestore.instance.collection('auctionItems').doc(docId).update({'notClosed':false}).catchError((e) => print(e));
-                                          }
-                                        },
-                                        disabledColor: Color(0xFF0B5345),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            new BorderRadius.circular(30.0)),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                const EdgeInsets.all(3.0),
-                                                child: Icon(
-                                                    Icons.check_box_outlined,
-                                                    color: Colors.white),
-                                              ),
-                                              Text(
-                                                'بيع المنتج',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              ),
-                                            ]),
-                                      ),
-                                      FlatButton(
-                                          color: Color(0xFF0B5345),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                      children: [
+                                        FlatButton(
+                                          onPressed:disabledButt? null: (){
+                                              setState(() {
+                                                disabledButt == true ;
+                                              });
+                                            sendEmail(userEmail);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Text('تم ارسال الرسالة لصاحب الطلب'),
+                                            ));
+                                            if(widget.notClosed == true){
+                                              FirebaseFirestore.instance.collection('auctionItems')
+                                                  .doc(docId).update({'notClosed':false}).catchError((e) => print(e));
+                                            }
+                                          },
+                                         color: Color(0xFF0B5345),
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                               new BorderRadius.circular(30.0)),
-                                          onPressed: () async {
-                                            await FirebaseFirestore.instance
-                                                .collection('messages')
-                                                .where('allUsers', arrayContains: [
-                                              _uid,
-                                              receiverId
-                                            ])
-                                                .get()
-                                                .then((value) {
-                                              if (value.docs.length < 1) {
-                                                setState(() {
-                                                  convExist = false;
-                                                  docId = documentId(
-                                                      FirebaseAuth.instance
-                                                          .currentUser.uid,
-                                                      receiverId);
-                                                });
-                                              } else {
-                                                setState(() {
-                                                  convExist = true;
-                                                  docId = value.docs.first.id;
-                                                });
-                                              }
-                                            }
-
-                                            );
-                                            if (convExist) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ChatScreen(
-                                                              receiverId:
-                                                              receiverId,
-                                                              docId: docId)));
-                                            } else {
-                                              _firestore
+                                          child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(3.0),
+                                                  child: Icon(
+                                                      Icons.check_box_outlined,
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  'بيع المنتج',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20),
+                                                ),
+                                              ]),
+                                        ),
+                                        FlatButton(
+                                            color: Color(0xFF0B5345),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                new BorderRadius.circular(30.0)),
+                                            onPressed: () async {
+                                              await FirebaseFirestore.instance
                                                   .collection('messages')
-                                                  .doc(docId)
-                                                  .set({
-                                                'lastmessage': '',
-                                                'sender': FirebaseAuth
-                                                    .instance.currentUser.uid,
-                                                'receiver': receiverId,
-                                                'isRead': false,
-                                                'time': DateTime.now(),
-                                                'allUsers': [
-                                                  FirebaseAuth
-                                                      .instance.currentUser.uid,
-                                                  receiverId
-                                                ],
-                                              }).then((value) => {
+                                                  .where('allUsers', arrayContains: [
+                                                _uid,
+                                                receiverId
+                                              ])
+                                                  .get()
+                                                  .then((value) {
+                                                if (value.docs.length < 1) {
+                                                  setState(() {
+                                                    convExist = false;
+                                                    docId = documentId(
+                                                        FirebaseAuth.instance
+                                                            .currentUser.uid,
+                                                        receiverId);
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    convExist = true;
+                                                    docId = value.docs.first.id;
+                                                  });
+                                                }
+                                              }
+
+                                              );
+                                              if (convExist) {
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
@@ -226,25 +203,51 @@ class _BidsPageState extends State<BidsPage> {
                                                             ChatScreen(
                                                                 receiverId:
                                                                 receiverId,
-                                                                docId:
-                                                                docId)))
-                                              });
-                                            }
-                                          },
-                                          child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.message,
-                                                    color: Colors.white),
-                                                Text(
-                                                  'محادثة خاصة',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
-                                                ),
-                                              ])),
-                                    ],
+                                                                docId: docId)));
+                                              } else {
+                                                _firestore
+                                                    .collection('messages')
+                                                    .doc(docId)
+                                                    .set({
+                                                  'lastmessage': '',
+                                                  'sender': FirebaseAuth
+                                                      .instance.currentUser.uid,
+                                                  'receiver': receiverId,
+                                                  'isRead': false,
+                                                  'time': DateTime.now(),
+                                                  'allUsers': [
+                                                    FirebaseAuth
+                                                        .instance.currentUser.uid,
+                                                    receiverId
+                                                  ],
+                                                }).then((value) => {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ChatScreen(
+                                                                  receiverId:
+                                                                  receiverId,
+                                                                  docId:
+                                                                  docId)))
+                                                });
+                                              }
+                                            },
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.message,
+                                                      color: Colors.white),
+                                                  Text(
+                                                    'محادثة خاصة',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  ),
+                                                ])),
+                                      ],
+                                    ),
                                   ),
                                 ])
                             );

@@ -48,6 +48,19 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     });
   }
+  checkAndRequestCameraPermissions() async {
+    final picker = ImagePicker();
+    try {
+      final image = await picker.getImage(
+        source: ImageSource.camera,
+        imageQuality: 75,
+        maxHeight: 300,
+        maxWidth: 400,
+      );
+    } catch (e) {
+      print(e.code);
+    }
+  }
 
   Future uploadFile() async {
     //file compression

@@ -69,7 +69,10 @@ class _DetailScreenState extends State<DetailScreen> {
     ItemNotifier itemNotifier =
         Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    date = itemNotifier.currentItem.createdOn.toDate().add(new Duration(days: itemNotifier.currentItem.duration));
+    if(itemNotifier.currentItem.type == 'مزاد'){
+      date = itemNotifier.currentItem.createdOn.toDate().add(new Duration(days: itemNotifier.currentItem.duration));
+    }
+
     String validatePrice(String value) {
       setState(() {
         minPrice = int.parse(itemNotifier.currentItem.price);
@@ -160,7 +163,7 @@ class _DetailScreenState extends State<DetailScreen> {
       backgroundColor: Color(0xffF7F7F7),
       appBar: AppBar(
         title: Center(child: Text('منتج')),
-        backgroundColor: Color(0xff4072AF),
+        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         child: Center(
