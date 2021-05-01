@@ -6,9 +6,10 @@ import 'package:reuse_app/item_notifier.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'auth_provider.dart';
 
-
 class DetailScreen extends StatefulWidget {
   static String id = 'Item';
+  String docId;
+  DetailScreen({this.docId});
   @override
   _DetailScreenState createState() => _DetailScreenState();
 }
@@ -90,13 +91,13 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
 
-    String theLastNumberAution() {
-      if (pricePar == null) {
-        return itemNotifier.currentItem.price;
-      } else {
-        return '$pricePar';
-      }
-    }
+    // String theLastNumberAution() {
+    //   if (pricePar == null) {
+    //     return itemNotifier.currentItem.price;
+    //   } else {
+    //     return '$pricePar';
+    //   }
+    // }
 
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
@@ -160,9 +161,9 @@ class _DetailScreenState extends State<DetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(child: Text('منتج')),
+        title:  Center(child: Text(itemNotifier.currentItem.name)),
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
@@ -241,7 +242,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               color: Colors.white,
                             ),
                             Text(
-                              theLastNumberAution(),
+                              itemNotifier.currentItem.price,
                               style: TextStyle(color: Colors.white),
                             ),
                           ],

@@ -10,10 +10,10 @@ import 'chatScreen.dart';
 
 class BidsPage extends StatefulWidget {
   static String id = 'RequestsPage';
-  String nameOfProduct ;
-  int duration ;
+  String nameOfProduct;
+  int duration;
   Timestamp createdOn;
-  bool notClosed ;
+  bool notClosed;
   // String docId;
   String uid = FirebaseAuth.instance.currentUser.uid;
   final String docId;
@@ -23,8 +23,8 @@ class BidsPage extends StatefulWidget {
 }
 
 class _BidsPageState extends State<BidsPage> {
-  bool disabledButt = false ;
-  DateTime dateAfterAuction ;
+  bool disabledButt = false;
+  DateTime dateAfterAuction;
   AuthProvider authProvider;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
@@ -38,21 +38,23 @@ class _BidsPageState extends State<BidsPage> {
   }
 
   bool convExist = false;
-  sendEmail(String userEmail) async{
+  sendEmail(String userEmail) async {
     var options = new GmailSmtpOptions()
       ..username = 'reuseapp0@gmail.com'
       ..password = 'r0w21E5Nfoiy';
     var emailTransport = new SmtpTransport(options);
     final message = Envelope()
-      ..from =  'reuseapp0@gmail.com'
+      ..from = 'reuseapp0@gmail.com'
       ..recipients.add(userEmail)
       ..subject = 'نتيجة التبرع ب ${widget.nameOfProduct}'
       ..text = 'تم قبول طلبكم وسيتم التواصل معكم من قبل صاحب المنتج';
     // Email it.
-    emailTransport.send(message)
+    emailTransport
+        .send(message)
         .then((envelope) => print('message sent'))
         .catchError((e) => print('Error occurred: $e'));
   }
+
   Widget build(BuildContext context) {
     var docId = this.widget.docId;
     return SafeArea(
@@ -85,7 +87,7 @@ class _BidsPageState extends State<BidsPage> {
                   );
                 } else {
                   return ListView.builder(
-                       shrinkWrap: true,
+                      shrinkWrap: true,
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (context, index) {
                         DocumentSnapshot document = snapshot.data.docs[index];

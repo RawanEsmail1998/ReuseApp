@@ -16,6 +16,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'constants.dart';
 import 'package:reuse_app/RegistrationScreen.dart';
 import 'myproducts.dart';
+import 'myprofile.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -35,12 +36,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List items = [];
   List filterItems = [];
   String val;
-  Timestamp date ;
+  Timestamp date;
   int length;
-  DateTime dateAfterAuction ;
+  DateTime dateAfterAuction;
   String searshBar = '';
   int duration;
-  List<String> countList = ['اثاث منزل','ادوات مطبخ','اجهزة'] ;
+  List<String> countList = ['اثاث منزل', 'ادوات مطبخ', 'اجهزة'];
   List<String> selectedCountList = [];
 
   void initState() {
@@ -57,39 +58,33 @@ class _HomeScreenState extends State<HomeScreen> {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     ItemNotifier itemNotifier = Provider.of<ItemNotifier>(context);
 
-
     void _openFilterDialog() async {
-      await FilterListDialog.display(
-          context,
+      await FilterListDialog.display(context,
           listData: countList,
           selectedListData: selectedCountList,
           height: 480,
           headlineText: "Select Count",
-          searchFieldHintText: "Search Here",
-          label: (item) {
-            return item;
-          },
-          validateSelectedItem: (list, val) {
-            return list.contains(val);
-          },
-          onItemSearch: (list, text) {
-            // ignore: missing_return
-            if (list.any((element) =>
-                element.toLowerCase().contains(text.toLowerCase()))) {
-                   return list
-                  .where((element) =>
+          searchFieldHintText: "Search Here", label: (item) {
+        return item;
+      }, validateSelectedItem: (list, val) {
+        return list.contains(val);
+      }, onItemSearch: (list, text) {
+        // ignore: missing_return
+        if (list.any(
+            (element) => element.toLowerCase().contains(text.toLowerCase()))) {
+          return list
+              .where((element) =>
                   element.toLowerCase().contains(text.toLowerCase()))
-                  .toList();
-            }
-          },
-          onApplyButtonClick: (list) {
-            if (list != null) {
-              setState(() {
-                selectedCountList = List.from(list);
-              });
-            }
-            Navigator.pop(context);
+              .toList();
+        }
+      }, onApplyButtonClick: (list) {
+        if (list != null) {
+          setState(() {
+            selectedCountList = List.from(list);
           });
+        }
+        Navigator.pop(context);
+      });
     }
 
     return Scaffold(
@@ -97,11 +92,10 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Center(
           child: Text('Reuse'),
         ),
-
         backgroundColor: Colors.blue,
         leading: IconButton(
           icon: Icon(Icons.filter_alt_outlined),
-          onPressed: _openFilterDialog ,
+          onPressed: _openFilterDialog,
         ),
       ),
       backgroundColor: Colors.white,
@@ -127,37 +121,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Color(0xff4072AF)),
                   )),
                 ),
-                  ListWidget(
-                    icon: Icons.account_circle_sharp,
-                    text: 'ملفي الشخصي',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  ListWidget(
-                    icon: Icons.all_inbox,
-                    text: 'منتجاتي',
-                    onPressed: () {
-                      Navigator.pushNamed(context, MyProducts.id);
-                    },
-                  ),
-                  ListWidget(
-                    icon: Icons.mail_sharp,
-                    text: 'الرسائل',
-                    onPressed: () {
-                      Navigator.pushNamed(context, Allmessages.id);
-                    },
-                  ),
-                  ListWidget(
-                    icon: Icons.close,
-                    text: 'تسجيل الخروج',
-                    onPressed: () {
-                      Navigator.pushNamed(context, VisitorHomeScreen.id);
-                      authProvider.signOut();
-                    },
-                  ),
-
-
+                ListWidget(
+                  icon: Icons.account_circle_sharp,
+                  text: 'ملفي الشخصي',
+                  onPressed: () {
+                    Navigator.pushNamed(context, MyProfile.id);
+                  },
+                ),
+                ListWidget(
+                  icon: Icons.all_inbox,
+                  text: 'منتجاتي',
+                  onPressed: () {
+                    Navigator.pushNamed(context, MyProducts.id);
+                  },
+                ),
+                ListWidget(
+                  icon: Icons.mail_sharp,
+                  text: 'الرسائل',
+                  onPressed: () {
+                    Navigator.pushNamed(context, Allmessages.id);
+                  },
+                ),
+                ListWidget(
+                  icon: Icons.close,
+                  text: 'تسجيل الخروج',
+                  onPressed: () {
+                    Navigator.pushNamed(context, VisitorHomeScreen.id);
+                    authProvider.signOut();
+                  },
+                ),
               ],
             ),
           ),

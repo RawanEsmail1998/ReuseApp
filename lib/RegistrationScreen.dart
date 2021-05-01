@@ -145,7 +145,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           setState(() => error = 'البريد مسجل مسبقاً');
                         } else if (result != null) {
                           db.userSetup(fullName, phoneNumber, city, email);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          Scaffold.of(context).showSnackBar(SnackBar(
                             content: Text(
                                 "الرجاء النقر على الرابط المرسل على بريدك الإلكتروني لتتمكن من تسجيل الدخول"),
                           ));

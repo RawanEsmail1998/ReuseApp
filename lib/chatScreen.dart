@@ -15,7 +15,6 @@ import 'package:intl/date_symbol_data_local.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 AuthProvider authProvider;
 User loggedUser;
-
 String _uid = FirebaseAuth.instance.currentUser.uid;
 
 class ChatScreen extends StatefulWidget {
@@ -68,12 +67,12 @@ class _ChatScreenState extends State<ChatScreen> {
         .ref()
         .child('images/${Path.basename(_image.path)}');
     await ref.putFile(_image).whenComplete(() async {
-      await ref.getDownloadURL().then((value) {
-        setState(() {
-          imageUrl = value;
-        });
+      String url = await ref.getDownloadURL();
+      setState(() {
+        imageUrl =  url ;
       });
-    });
+
+      });
   }
 
   void initState() {
@@ -118,7 +117,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       );
                     }
-                    final messages = snapshot.data.docs.reversed;
                     return Expanded(
                       child: ListView.builder(
                           itemCount: snapshot.data.docs.length,
@@ -129,15 +127,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                 snapshot.data.docs[index];
                             String message = document.data()['content'];
                             String senderid = document.data()['fromId'];
-                            String ReciverId = document.data()['toId'];
                             final imageurl = document.data()['image'];
                             final Timestamp timestamp =
                                 document.data()['timeStamp'] as Timestamp;
                             final DateTime dateTime = timestamp.toDate();
                             final dateString =
                                 DateFormat('K:mm').format(dateTime);
-                            bool isMe = _uid != senderid;
-                            if (imageurl == null) {
+                            bool isMe = senderid == _uid ? true : false;
+                            if (message != '') {
                               return Padding(
                                   padding: EdgeInsets.all(5.0),
                                   child: Column(
@@ -250,9 +247,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             .add({
                           'content': messageTextController.text,
                           'fromId': FirebaseAuth.instance.currentUser.uid,
-                          'toId': widget.receiverId,
                           'image': imageUrl,
                           'timeStamp': DateTime.now()
+                        });
+                        _firestore
+                            .collection('messages')
+                            .doc(widget.docId)
+                            .update({
+                          'lastmessage': messageTextController.text,
                         });
                         messageTextController.clear();
                       },

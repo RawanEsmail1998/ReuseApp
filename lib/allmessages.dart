@@ -17,7 +17,25 @@ class _AllmessagesState extends State<Allmessages> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
   String _uid = FirebaseAuth.instance.currentUser.uid;
-  Stream users = FirebaseFirestore.instance.collection('users').snapshots();
+  var users = FirebaseFirestore.instance.collection('users');
+  String senderName = '';
+  String receiverName = '';
+
+  getSenderName(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        senderName = value.data()['Full_Name'];
+      });
+    });
+  }
+
+  getReceiverName(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        receiverName = value.data()['Full_Name'];
+      });
+    });
+  }
 
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,23 +60,77 @@ class _AllmessagesState extends State<Allmessages> {
                         String theReceiver = document.data()['receiver'];
                         String lastMessage = document.data()['lastmessage'];
                         String docId = document.id;
+                        // String senderName = getName(theSender);
+                        // String receiverName = getName(theReceiver);
+                        // is the sender me ?
+                        getReceiverName(theReceiver);
+                        getSenderName(theSender);
+                        bool isMe = _uid == theSender ? true : false;
 
-                        return ListTile(
-                          title: Text(theSender),
-                          trailing: Text(lastMessage),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatScreen(
-                                          docId: docId,
-                                          receiverId: theReceiver,
-                                        )));
-                          },
-                        );
+                        return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatScreen(
+                                            docId: docId,
+                                            receiverId: theReceiver,
+                                          )));
+                            },
+                            child: Container(
+                              width: 400,
+                              height: 70,
+                              padding: const EdgeInsets.all(3),
+                              margin: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                    width: 0.6,
+                                    color: Colors.blueGrey,
+                                  )),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  children: [
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            isMe
+                                                ? ';$receiverName'
+                                                : ';$senderName',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.indigo),
+                                          ),
+                                          Text(
+                                            '$lastMessage:',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.black54),
+                                          ),
+                                        ]),
+                                    CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      backgroundImage:
+                                          AssetImage('images/personimage.png'),
+                                      radius: 28,
+                                    ),
+                                  ]),
+                            ));
                       });
                 } else
-                  return SizedBox();
+                  return SizedBox(
+                    child: Text('لا يوجد رسائل '),
+                  );
               })),
     );
   }

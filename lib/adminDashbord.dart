@@ -24,8 +24,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
   AuthProvider authProvider;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  CollectionReference _archItems = FirebaseFirestore.instance.collection('archItems');
-  List<NetworkImage> img ;
+  CollectionReference _archItems =
+      FirebaseFirestore.instance.collection('archItems');
+  List<NetworkImage> img;
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
@@ -50,31 +51,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
                 child: Center(
                     child: Text(
-                      'Reuse App',
-                      style: TextStyle(color: Color(0xff4072AF)),
-                    )),
+                  'Reuse App',
+                  style: TextStyle(color: Color(0xff4072AF)),
+                )),
               ),
               ListWidget(
                 text: 'اضافة ادمن جديد',
                 icon: Icons.admin_panel_settings,
-                onPressed: (){
+                onPressed: () {
                   Navigator.pushNamed(context, AddAdminScreen.id);
                 },
               ),
               ListWidget(
                 text: 'الأرشيف',
                 icon: Icons.archive_rounded,
-                onPressed: (){
+                onPressed: () {
                   Navigator.pushNamed(context, ArchItemsScreen.id);
                 },
               ),
               ListWidget(
-                onPressed: (){
-                    Navigator.pushNamed(context, VisitorHomeScreen.id);
-                    _auth.signOut();
+                onPressed: () {
+                  Navigator.pushNamed(context, VisitorHomeScreen.id);
+                  _auth.signOut();
                 },
-                icon:Icons.close,
-                text:'تسجيل الخروج',
+                icon: Icons.close,
+                text: 'تسجيل الخروج',
               )
             ],
           ),
@@ -120,9 +121,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           final docId = document.data()['documentId'];
                           final name = document.data()['Full_Name'];
                           return ListTile(
-                            leading: Image.network(image[0],
-                              width: 120.0,
-                              fit: BoxFit.fitWidth,
+                            leading: Image.network(
+                              image[0],
+                              fit: BoxFit.cover,
                             ),
                             title: Text(nameOfProduct),
                             subtitle: Row(
@@ -146,7 +147,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': false
                                         }).catchError((e) => print(e));
-                                        ScaffoldMessenger.of(context)
+                                        Scaffold.of(context)
                                             .showSnackBar(SnackBar(
                                           content: Text('تم حظر المستخدم'),
                                         ));
@@ -159,7 +160,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': true
                                         }).catchError((e) => print(e));
-                                        ScaffoldMessenger.of(context)
+                                        Scaffold.of(context)
                                             .showSnackBar(SnackBar(
                                           content:
                                               Text('تم رفع الحظر المستخدم'),
@@ -172,9 +173,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 ),
                                 Expanded(
                                   child: IconButton(
-                                    onPressed: (){
-                                      FirebaseFirestore.instance.collection('auctionItems').doc(docId).collection('auctioneer').doc().delete();
-                                      FirebaseFirestore.instance.collection('auctionItems').doc(docId).delete();
+                                    onPressed: () {
+                                      FirebaseFirestore.instance
+                                          .collection('auctionItems')
+                                          .doc(docId)
+                                          .collection('auctioneer')
+                                          .doc()
+                                          .delete();
+                                      FirebaseFirestore.instance
+                                          .collection('auctionItems')
+                                          .doc(docId)
+                                          .delete();
                                       _archItems.doc(docId).set({
                                         'type': type,
                                         'uid': owner,
@@ -183,17 +192,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         'duration': duration,
                                         'name': nameOfProduct,
                                         'details': details,
-                                        'category':category,
-                                        'imageUrl': image ,
-                                        'createdOn' : createdOn,
-                                        'documentId' : docId,
+                                        'category': category,
+                                        'imageUrl': image,
+                                        'createdOn': createdOn,
+                                        'documentId': docId,
                                         'Full_Name': name,
-                                      }) ;
-                                    } ,
-                                    icon:Icon(Icons.archive_rounded),
+                                      });
+                                    },
+                                    icon: Icon(Icons.archive_rounded),
                                     color: Colors.blue,
                                   ),
-                                ) ,
+                                ),
                                 Container(
                                   padding: EdgeInsets.all(5.0),
                                   decoration: BoxDecoration(
@@ -202,8 +211,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     color: Colors.red.shade600,
                                   ),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Icon(
                                         Icons.location_on_rounded,
@@ -218,22 +226,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     ],
                                   ),
                                 ),
-
                               ],
                             ),
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => DetailsScreenForAdmin(
-                                  nameOfProduct: nameOfProduct,
-                                  ownerId: owner,
-                                  ownerName: name,
-                                  createdOn: createdOn,
-                                  details: details,
-                                  type: type,
-                                  price: price,
-                                  imgList: image,
-                                )
-                              ));
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailsScreenForAdmin(
+                                            nameOfProduct: nameOfProduct,
+                                            ownerId: owner,
+                                            ownerName: name,
+                                            createdOn: createdOn,
+                                            details: details,
+                                            type: type,
+                                            price: price,
+                                            imgList: image,
+                                          )));
                             },
                           );
                         },
@@ -268,7 +277,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot document = snapshot.data.docs[index];
 
-                           final image =  document.data()['imageUrl'];
+                          final image = document.data()['imageUrl'];
                           final owner = document.data()['uid'];
                           final nameOfProduct = document.data()['name'];
                           final city = document.data()['city'];
@@ -279,10 +288,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           final docId = document.data()['documentId'];
                           final name = document.data()['Full_Name'];
                           return ListTile(
-                            leading: Image.network(
-                              image[0],
-                              width: 120.0,
-                              fit: BoxFit.fitWidth,
+                            leading: Expanded(
+                              child: Image.network(
+                                image[0],
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             title: Text(nameOfProduct),
                             subtitle: Row(
@@ -306,7 +316,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': false
                                         }).catchError((e) => print(e));
-                                        ScaffoldMessenger.of(context)
+                                        Scaffold.of(context)
                                             .showSnackBar(SnackBar(
                                           content: Text('تم حظر المستخدم'),
                                         ));
@@ -319,10 +329,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': true
                                         }).catchError((e) => print(e));
-                                        ScaffoldMessenger.of(context)
+                                        Scaffold.of(context)
                                             .showSnackBar(SnackBar(
                                           content:
-                                          Text('تم رفع الحظر المستخدم'),
+                                              Text('تم رفع الحظر المستخدم'),
                                         ));
 
                                         inActive = true;
@@ -333,35 +343,43 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 Expanded(
                                   child: IconButton(
                                     onPressed: () async {
-                                      FirebaseFirestore.instance.collection('donatedItems').doc(docId).collection('requests').doc().delete();
-                                      FirebaseFirestore.instance.collection('donatedItems').doc(docId).delete();
+                                      FirebaseFirestore.instance
+                                          .collection('donatedItems')
+                                          .doc(docId)
+                                          .collection('requests')
+                                          .doc()
+                                          .delete();
+                                      FirebaseFirestore.instance
+                                          .collection('donatedItems')
+                                          .doc(docId)
+                                          .delete();
                                       _archItems.doc(docId).set({
                                         'type': type,
                                         'uid': owner,
                                         'city': city,
                                         'name': nameOfProduct,
                                         'details': details,
-                                        'category':category,
-                                        'imageUrl': image ,
-                                        'createdOn' : createdOn,
-                                        'documentId' : docId,
+                                        'category': category,
+                                        'imageUrl': image,
+                                        'createdOn': createdOn,
+                                        'documentId': docId,
                                         'Full_Name': name,
-                                      }) ;
-                                    } ,
-                                    icon:Icon(Icons.archive_rounded),
+                                      });
+                                    },
+                                    icon: Icon(Icons.archive_rounded),
                                     color: Colors.blue,
                                   ),
-                                ) ,
+                                ),
                                 Container(
                                   padding: EdgeInsets.all(5.0),
                                   decoration: BoxDecoration(
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(20.0)),
+                                        BorderRadius.all(Radius.circular(20.0)),
                                     color: Colors.red.shade600,
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Icon(
                                         Icons.location_on_rounded,
@@ -378,18 +396,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 ),
                               ],
                             ),
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => DetailsScreenForAdmin(
-                                    nameOfProduct: nameOfProduct,
-                                    ownerId: owner,
-                                    ownerName: name,
-                                    createdOn: createdOn,
-                                    details: details,
-                                    type: type,
-                                    imgList: image,
-                                  )
-                              ));
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailsScreenForAdmin(
+                                            nameOfProduct: nameOfProduct,
+                                            ownerId: owner,
+                                            ownerName: name,
+                                            createdOn: createdOn,
+                                            details: details,
+                                            type: type,
+                                            imgList: image,
+                                          )));
                             },
                           );
                         },

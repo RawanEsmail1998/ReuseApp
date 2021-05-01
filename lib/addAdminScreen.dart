@@ -9,14 +9,14 @@ import 'auth_provider.dart';
 import 'constants.dart';
 
 class AddAdminScreen extends StatefulWidget {
-  static String id='AddAdminScreen';
+  static String id = 'AddAdminScreen';
   @override
   _AddAdminScreenState createState() => _AddAdminScreenState();
 }
 
 class _AddAdminScreenState extends State<AddAdminScreen> {
   CollectionReference userAccount =
-  FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('users');
   final _formKey = GlobalKey<FormState>();
   AuthProvider _auth = AuthProvider();
   String _password;
@@ -42,7 +42,6 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('اضافة ادمن جديد')),
@@ -64,7 +63,9 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                     value.isEmpty ? 'الرجاء ادخال الاسم' : null,
                 onSaved: (value) => fullName = value,
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(
+                height: 16.0,
+              ),
               TextFormField(
                 decoration: KTextField.copyWith(hintText: 'البريد الإلكتروني'),
                 textDirection: TextDirection.rtl,
@@ -75,7 +76,9 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                     emailValid(value) ? null : 'الرجاء ادخال بريد صالح',
                 onSaved: (value) => email = value,
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(
+                height: 16.0,
+              ),
               InternationalPhoneInput(
                 decoration: KTextField.copyWith(hintText: '(416) 123-4567'),
                 onPhoneNumberChange: onPhoneNumberChange,
@@ -84,7 +87,9 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                 enabledCountries: ['+966'],
                 showCountryCodes: true,
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(
+                height: 16.0,
+              ),
               TextFormField(
                 decoration: KTextField.copyWith(hintText: 'المدينة'),
                 textDirection: TextDirection.rtl,
@@ -94,7 +99,9 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                     value.isEmpty ? 'الرجاء ادخال المدينة' : null,
                 onSaved: (value) => city = value,
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(
+                height: 16.0,
+              ),
               TextFormField(
                 decoration: KTextField.copyWith(hintText: 'كلمة المرور'),
                 textDirection: TextDirection.rtl,
@@ -106,7 +113,9 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                     : null,
                 onSaved: (value) => _password = value,
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(
+                height: 16.0,
+              ),
               Center(
                 child: Text(
                   error,
@@ -118,7 +127,8 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                   final formState = _formKey.currentState;
                   if (formState.validate()) {
                     formState.save();
-                    dynamic result = await _auth.registerWithEmailAndPassword(email, _password);
+                    dynamic result = await _auth.registerWithEmailAndPassword(
+                        email, _password);
                     if (result == null) {
                       setState(() => error = 'البريد مسجل مسبقاً');
                     } else if (result != null) {
@@ -137,7 +147,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
                       }
 
                       addAdmin();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text(
                             "الرجاء النقر على الرابط المرسل على بريدك الإلكتروني لتتمكن من تسجيل الدخول"),
                       ));

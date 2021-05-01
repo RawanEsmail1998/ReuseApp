@@ -34,23 +34,24 @@ class _RequestsPageState extends State<RequestsPage> {
   }
 
   bool convExist = false;
-  sendEmail(String userEmail) async{
+  sendEmail(String userEmail) async {
     var options = new GmailSmtpOptions()
       ..username = 'reuseapp0@gmail.com'
       ..password = 'r0w21E5Nfoiy';
     var emailTransport = new SmtpTransport(options);
     final message = Envelope()
-      ..from =  'reuseapp0@gmail.com'
+      ..from = 'reuseapp0@gmail.com'
       ..recipients.add(userEmail)
       ..subject = 'نتيجة التبرع ${widget.nameOfProduct}'
       ..text = 'تم قبول طلبكم وسيتم التواصل معكم من قبل صاحب المنتج';
     // Email it.
-    emailTransport.send(message)
+    emailTransport
+        .send(message)
         .then((envelope) => print('message sent'))
         .catchError((e) => print('Error occurred: $e'));
   }
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
     var docId = this.widget.docId;
     return SafeArea(
       child: Scaffold(
@@ -80,7 +81,7 @@ class _RequestsPageState extends State<RequestsPage> {
                   );
                 } else {
                   return ListView.builder(
-                     shrinkWrap: true,
+                      shrinkWrap: true,
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (context, index) {
                         DocumentSnapshot document = snapshot.data.docs[index];
@@ -149,99 +150,100 @@ class _RequestsPageState extends State<RequestsPage> {
                                               .showSnackBar(SnackBar(
                                             content: Text('تم ارسال الرسالة لصاحب الطلب'),
                                           ));
-                                          if(widget.notClosed == true){
-                                            FirebaseFirestore.instance.collection('donatedItems').doc(docId).update({'notClosed':false}).catchError((e) => print(e));
-                                          }
-                                        },
-                                      ),
-                                    FlatButton(
-                                        color: Color(0xff0B5345),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(30.0)),
-                                        onPressed: () async {
-                                          await FirebaseFirestore.instance
-                                              .collection('messages')
-                                              .where('allUsers', arrayContains: [
-                                                _uid,
-                                                receiverId
-                                              ])
-                                              .get()
-                                              .then((value) {
-                                                if (value.docs.length < 1) {
-                                                  setState(() {
-                                                    convExist = false;
-                                                    docId = documentId(
-                                                        FirebaseAuth.instance
-                                                            .currentUser.uid,
-                                                        receiverId);
-                                                  });
-                                                } else {
-                                                  setState(() {
-                                                    convExist = true;
-                                                    docId = value.docs.first.id;
-                                                  });
-                                                }
-                                              });
-                                          if (convExist) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ChatScreen(
-                                                            receiverId:
-                                                                receiverId,
-                                                            docId: docId)));
-                                          } else {
-                                            _firestore
-                                                .collection('messages')
+                                          if (widget.notClosed == true) {
+                                            FirebaseFirestore.instance
+                                                .collection('donatedItems')
                                                 .doc(docId)
-                                                .set({
-                                              'lastmessage': '',
-                                              'sender': FirebaseAuth
-                                                  .instance.currentUser.uid,
-                                              'receiver': receiverId,
-                                              'isRead': false,
-                                              'time': DateTime.now(),
-                                              'allUsers': [
-                                                FirebaseAuth
-                                                    .instance.currentUser.uid,
-                                                receiverId
-                                              ],
-                                            }).then((value) => {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ChatScreen(
-                                                                      receiverId:
-                                                                          receiverId,
-                                                                      docId:
-                                                                          docId)))
-                                                    });
+                                                .update({
+                                              'notClosed': false
+                                            }).catchError((e) => print(e));
                                           }
                                         },
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(3.0),
-                                                child: Icon(Icons.message,
-                                                    color: Colors.white),
-                                              ),
-                                              Text(
-                                                'محادثة خاصة',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              ),
-                                            ])),
-                                  ],
-                                )
-                              ]),
-                            );
+                                ),
+                                FlatButton(
+                                    color: Color(0xff0B5345),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            new BorderRadius.circular(30.0)),
+                                    onPressed: () async {
+                                      await FirebaseFirestore.instance
+                                          .collection('messages')
+                                          .where('allUsers',
+                                              arrayContains: [_uid, receiverId])
+                                          .get()
+                                          .then((value) {
+                                            if (value.docs.length < 1) {
+                                              setState(() {
+                                                convExist = false;
+                                                docId = documentId(
+                                                    FirebaseAuth.instance
+                                                        .currentUser.uid,
+                                                    receiverId);
+                                              });
+                                            } else {
+                                              setState(() {
+                                                convExist = true;
+                                                docId = value.docs.first.id;
+                                              });
+                                            }
+                                          });
+                                      if (convExist) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChatScreen(
+                                                        receiverId: receiverId,
+                                                        docId: docId)));
+                                      } else {
+                                        _firestore
+                                            .collection('messages')
+                                            .doc(docId)
+                                            .set({
+                                          'lastmessage': '',
+                                          'sender': FirebaseAuth
+                                              .instance.currentUser.uid,
+                                          'receiver': receiverId,
+                                          'isRead': false,
+                                          'time': DateTime.now(),
+                                          'allUsers': [
+                                            FirebaseAuth
+                                                .instance.currentUser.uid,
+                                            receiverId
+                                          ],
+                                        }).then((value) => {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ChatScreen(
+                                                                  receiverId:
+                                                                      receiverId,
+                                                                  docId:
+                                                                      docId)))
+                                                });
+                                      }
+                                    },
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(3.0),
+                                            child: Icon(Icons.message,
+                                                color: Colors.white),
+                                          ),
+                                          Text(
+                                            'محادثة خاصة',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                        ])),
+                              ],
+                            )
+                          ]),
+                        );
                       });
                 }
               })),

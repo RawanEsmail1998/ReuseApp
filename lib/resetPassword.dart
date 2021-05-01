@@ -56,7 +56,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   if (formState.validate()) {
                     formState.save();
                     _auth.sendPasswordResetEmail(email: email);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(
                           "تم ارسال رابط استعادة كلمة المرور على البريد الإلكتروني"),
                     ));

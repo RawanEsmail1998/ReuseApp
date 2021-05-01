@@ -262,13 +262,15 @@ class _AddItemState extends State<AddItem> {
                                   },
                                 ),
                               )
-                            : Container(
-                                margin: EdgeInsets.all(3.0),
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: FileImage(_image[index - 1]),
-                                        fit: BoxFit.cover)),
-                              );
+                            : Flexible(
+                              child: Container(
+                                  margin: EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: FileImage(_image[index - 1]),
+                                          fit: BoxFit.cover)),
+                                ),
+                            );
                       },
                     ),
                     uploading
@@ -315,17 +317,18 @@ class _AddItemState extends State<AddItem> {
     );
   }
 
-  chooseImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  Future chooseImage() async {
+   final pickedFile = await picker.getImage(source: ImageSource.gallery ,  maxWidth: 480, maxHeight: 600);
     setState(() {
-      _image.add(File(pickedFile?.path));
+      _image.add(File(pickedFile.path));
+      print(pickedFile);
     });
     if (pickedFile.path == null) retrieveLostData();
   }
 
   Future<void> retrieveLostData() async {
     final LostData response = await picker.getLostData();
-    if (response.isEmpty) {
+    if (response.isEmpty){
       return;
     }
     if (response != null) {

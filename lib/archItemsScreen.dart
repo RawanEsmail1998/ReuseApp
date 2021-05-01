@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'detailsScreenForAdmin.dart';
+
 class ArchItemsScreen extends StatefulWidget {
   static String id = 'ArchItemsScreen';
   @override
@@ -17,7 +18,6 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Center(child: Text('العناصر المحذوفة')),
-
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -46,9 +46,10 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                           shrinkWrap: true,
                           itemCount: snapshot.data.docs.length,
                           itemBuilder: (context, index) {
-                            DocumentSnapshot document = snapshot.data.docs[index];
+                            DocumentSnapshot document =
+                                snapshot.data.docs[index];
 
-                            final image =  document.data()['imageUrl'];
+                            final image = document.data()['imageUrl'];
                             final owner = document.data()['uid'];
                             final nameOfProduct = document.data()['name'];
                             final city = document.data()['city'];
@@ -62,12 +63,12 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                             return ListTile(
                               leading: Image.network(
                                 image[0],
-                                width: 120.0,
-                                fit: BoxFit.fitWidth,
+                                fit: BoxFit.cover,
                               ),
                               title: Text(nameOfProduct),
                               subtitle: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(type),
                                   FlatButton(
@@ -87,7 +88,7 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                                               .update({
                                             'In-active': false
                                           }).catchError((e) => print(e));
-                                          ScaffoldMessenger.of(context)
+                                          Scaffold.of(context)
                                               .showSnackBar(SnackBar(
                                             content: Text('تم حظر المستخدم'),
                                           ));
@@ -100,10 +101,10 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                                               .update({
                                             'In-active': true
                                           }).catchError((e) => print(e));
-                                          ScaffoldMessenger.of(context)
+                                          Scaffold.of(context)
                                               .showSnackBar(SnackBar(
                                             content:
-                                            Text('تم رفع الحظر المستخدم'),
+                                                Text('تم رفع الحظر المستخدم'),
                                           ));
 
                                           inActive = true;
@@ -111,17 +112,16 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                                       });
                                     },
                                   ),
-
                                   Container(
                                     padding: EdgeInsets.all(5.0),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0)),
                                       color: Colors.red.shade600,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Icon(
                                           Icons.location_on_rounded,
@@ -138,34 +138,37 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                                   ),
                                 ],
                               ),
-                              onTap: (){
-                                if(type == 'تبرع'){
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => DetailsScreenForAdmin(
-                                        nameOfProduct: nameOfProduct,
-                                        ownerId: owner,
-                                        ownerName: name,
-                                        createdOn: createdOn,
-                                        details: details,
-                                        type: type,
-                                        imgList: image,
-                                      )
-                                  ));
-                                }else{
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => DetailsScreenForAdmin(
-                                        nameOfProduct: nameOfProduct,
-                                        ownerId: owner,
-                                        ownerName: name,
-                                        createdOn: createdOn,
-                                        details: details,
-                                        type: type,
-                                        price: price,
-                                        imgList: image,
-                                      )
-                                  ));
+                              onTap: () {
+                                if (type == 'تبرع') {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetailsScreenForAdmin(
+                                                nameOfProduct: nameOfProduct,
+                                                ownerId: owner,
+                                                ownerName: name,
+                                                createdOn: createdOn,
+                                                details: details,
+                                                type: type,
+                                                imgList: image,
+                                              )));
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetailsScreenForAdmin(
+                                                nameOfProduct: nameOfProduct,
+                                                ownerId: owner,
+                                                ownerName: name,
+                                                createdOn: createdOn,
+                                                details: details,
+                                                type: type,
+                                                price: price,
+                                                imgList: image,
+                                              )));
                                 }
-
                               },
                             );
                           },

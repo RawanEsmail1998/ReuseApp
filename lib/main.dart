@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reuse_app/Login_Screen.dart';
+import 'myprofile.dart';
 import 'package:reuse_app/addAdminScreen.dart';
 import 'package:reuse_app/add_item1.dart';
 import 'package:reuse_app/add_item2.dart';
@@ -50,12 +51,12 @@ class ReuseApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: VisitorHomeScreen.id,
           routes: {
-            VisitorHomeScreen.id:(context) => VisitorHomeScreen(),
+            VisitorHomeScreen.id: (context) => VisitorHomeScreen(),
             LoginScreen.id: (context) => LoginScreen(),
-            AdminDashboard.id:(context)  => AdminDashboard(),
-            DetailsScreenForAdmin.id:(context)  =>DetailsScreenForAdmin(),
-            AddAdminScreen.id:(context)  => AddAdminScreen(),
-            ArchItemsScreen.id:(context)  => ArchItemsScreen(),
+            AdminDashboard.id: (context) => AdminDashboard(),
+            DetailsScreenForAdmin.id: (context) => DetailsScreenForAdmin(),
+            AddAdminScreen.id: (context) => AddAdminScreen(),
+            ArchItemsScreen.id: (context) => ArchItemsScreen(),
             RegistrationScreen.id: (context) => RegistrationScreen(),
             AddItem1.id: (context) => AddItem1(),
             AddItem.id: (context) => AddItem(),
@@ -67,6 +68,7 @@ class ReuseApp extends StatelessWidget {
             ChatScreen.id: (context) => ChatScreen(),
             Allmessages.id: (context) => Allmessages(),
             BidsPage.id: (context) => BidsPage(),
+            MyProfile.id: (context) => MyProfile(),
           }),
     );
   }
