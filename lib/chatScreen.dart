@@ -54,10 +54,9 @@ class _ChatScreenState extends State<ChatScreen> {
         .ref()
         .child('images/${Path.basename(_image.path)}');
     await ref.putFile(_image).whenComplete(() async {
-      await ref.getDownloadURL().then((value) {
-        setState(() {
-          imageUrl = value;
-        });
+      String url = await ref.getDownloadURL();
+      setState(() {
+        imageUrl = url;
       });
     });
   }
@@ -121,7 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             final dateString =
                                 DateFormat('K:mm').format(dateTime);
                             bool isMe = senderid == _uid ? true : false;
-                            if (imageurl == null) {
+                            if (message != '') {
                               return Padding(
                                   padding: EdgeInsets.all(5.0),
                                   child: Column(
@@ -234,9 +233,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             .add({
                           'content': messageTextController.text,
                           'fromId': FirebaseAuth.instance.currentUser.uid,
-                          'image': imageUrl,
+                          'image': this.imageUrl,
                           'timeStamp': DateTime.now()
                         });
+
                         _firestore
                             .collection('messages')
                             .doc(widget.docId)

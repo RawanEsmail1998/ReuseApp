@@ -121,10 +121,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           final docId = document.data()['documentId'];
                           final name = document.data()['Full_Name'];
                           return ListTile(
-                            leading: Image.network(
-                              image[0],
-                              width: 120.0,
-                              fit: BoxFit.fitWidth,
+                            leading: Expanded(
+                              child: Image.network(
+                                image[0],
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             title: Text(nameOfProduct),
                             subtitle: Row(
@@ -289,10 +290,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           final docId = document.data()['documentId'];
                           final name = document.data()['Full_Name'];
                           return ListTile(
-                            leading: Image.network(
-                              image[0],
-                              width: 120.0,
-                              fit: BoxFit.fitWidth,
+                            leading: Expanded(
+                              child: Image.network(
+                                image[0],
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             title: Text(nameOfProduct),
                             subtitle: Row(

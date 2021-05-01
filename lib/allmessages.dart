@@ -92,8 +92,7 @@ class _AllmessagesState extends State<Allmessages> {
                                   )),
                               child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Column(
                                         mainAxisAlignment:

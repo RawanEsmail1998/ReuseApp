@@ -69,9 +69,11 @@ class _DetailScreenState extends State<DetailScreen> {
     ItemNotifier itemNotifier =
         Provider.of<ItemNotifier>(context, listen: false);
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    date = itemNotifier.currentItem.createdOn
-        .toDate()
-        .add(new Duration(days: itemNotifier.currentItem.duration));
+    if (itemNotifier.currentItem.type == 'مزاد') {
+      date = itemNotifier.currentItem.createdOn
+          .toDate()
+          .add(new Duration(days: itemNotifier.currentItem.duration));
+    }
     String validatePrice(String value) {
       setState(() {
         minPrice = int.parse(itemNotifier.currentItem.price);
@@ -89,13 +91,13 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
 
-    String theLastNumberAution() {
-      if (pricePar == null) {
-        return itemNotifier.currentItem.price;
-      } else {
-        return '$pricePar';
-      }
-    }
+    // String theLastNumberAution() {
+    //   if (pricePar == null) {
+    //     return itemNotifier.currentItem.price;
+    //   } else {
+    //     return '$pricePar';
+    //   }
+    // }
 
     List<NetworkImage> list = new List<NetworkImage>();
     docId = itemNotifier.currentItem.documentId;
@@ -114,8 +116,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     _showDialog() async {
       await showDialog<String>(
-        context: context,
-        child: _SystemPadding(
+        builder: (context) => _SystemPadding(
           child: AlertDialog(
             contentPadding: EdgeInsets.all(16.0),
             content: Row(
@@ -155,6 +156,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
           ),
         ),
+        context: context,
       );
     }
 
@@ -239,7 +241,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               color: Colors.white,
                             ),
                             Text(
-                              theLastNumberAution(),
+                              itemNotifier.currentItem.price,
                               style: TextStyle(color: Colors.white),
                             ),
                           ],
@@ -278,7 +280,7 @@ class _DetailScreenState extends State<DetailScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 100.0,
+                  height: 40.0,
                   child: Text(
                     itemNotifier.currentItem.details,
                     textAlign: TextAlign.center,

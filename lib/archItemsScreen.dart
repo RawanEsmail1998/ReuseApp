@@ -63,8 +63,7 @@ class _ArchItemsScreenState extends State<ArchItemsScreen> {
                             return ListTile(
                               leading: Image.network(
                                 image[0],
-                                width: 120.0,
-                                fit: BoxFit.fitWidth,
+                                fit: BoxFit.cover,
                               ),
                               title: Text(nameOfProduct),
                               subtitle: Row(
