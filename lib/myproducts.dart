@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:reuse_app/detailsScreenForProduct.dart';
 import 'auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'item_notifier.dart';
@@ -92,6 +93,9 @@ class _MyProductstState extends State<MyProducts>with TickerProviderStateMixin {
                             final itemname = document.data()['name'];
                             final itemdocid = document.data()['documentId'];
                             final status = document.data()['notClosed'];
+                            final image = document.data()['imageUrl'];
+                            final itemDetails = document.data()['details'];
+                            final itemType = document.data()['type'];
 
                             return Container(
                                 width: 400,
@@ -133,14 +137,16 @@ class _MyProductstState extends State<MyProducts>with TickerProviderStateMixin {
                                                         new BorderRadius
                                                             .circular(30.0)),
                                                 onPressed: () {
-                                                  itemNotifier.currentItem =
-                                                      itemNotifier
-                                                          .itemList[index];
                                                   Navigator.of(context).push(
                                                       MaterialPageRoute(builder:
                                                           (BuildContext
                                                               context) {
-                                                    return DetailScreen();
+                                                    return DetailsScreenProduct(
+                                                      nameOfProduct: itemname,
+                                                      details: itemDetails,
+                                                      imgList: image,
+                                                      type: itemType,
+                                                    );
                                                   }));
                                                 },
                                                 child: Row(
@@ -225,6 +231,10 @@ class _MyProductstState extends State<MyProducts>with TickerProviderStateMixin {
                                 snapshot.data.docs[index];
                             final itemname = document.data()['name'];
                             final itemid = document.data()['uid'];
+                            final itemDetails = document.data()['details'];
+                            final itemType = document.data()['type'];
+                            final image = document.data()['imageUrl'];
+                            final price = document.data()['price'];
                             final itemdocid = document.data()['documentId'];
                             final duration = document.data()['duration'];
                             final createdOn = document.data()['createdOn'];
@@ -270,15 +280,19 @@ class _MyProductstState extends State<MyProducts>with TickerProviderStateMixin {
                                                           new BorderRadius
                                                               .circular(30.0)),
                                                   onPressed: () {
-                                                    itemNotifier.currentItem =
-                                                        itemNotifier
-                                                            .itemList[index];
                                                     Navigator.of(context).push(
                                                         MaterialPageRoute(
                                                             builder:
                                                                 (BuildContext
                                                                     context) {
-                                                      return DetailScreen();
+                                                      return DetailsScreenProduct(
+                                                        type: itemType ,
+                                                        imgList: image,
+                                                        createdOn: createdOn,
+                                                        nameOfProduct: itemname,
+                                                        price: price,
+                                                        details: itemDetails,
+                                                      );
                                                     }));
                                                   },
                                                   child: Row(

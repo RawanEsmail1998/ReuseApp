@@ -247,9 +247,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             .add({
                           'content': messageTextController.text,
                           'fromId': FirebaseAuth.instance.currentUser.uid,
-                          'image': imageUrl,
+                          'image': this.imageUrl,
                           'timeStamp': DateTime.now()
                         });
+
                         _firestore
                             .collection('messages')
                             .doc(widget.docId)

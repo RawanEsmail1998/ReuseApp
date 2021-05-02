@@ -116,8 +116,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     _showDialog() async {
       await showDialog<String>(
-        context: context,
-        child: _SystemPadding(
+        builder: (context) => _SystemPadding(
           child: AlertDialog(
             contentPadding: EdgeInsets.all(16.0),
             content: Row(
@@ -157,6 +156,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
           ),
         ),
+        context: context,
       );
     }
 
@@ -281,7 +281,7 @@ class _DetailScreenState extends State<DetailScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 100.0,
+                  height: 40.0,
                   child: Text(
                     itemNotifier.currentItem.details,
                     textAlign: TextAlign.center,

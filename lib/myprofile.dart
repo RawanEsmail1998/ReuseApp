@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'auth_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_Storage;
+import 'package:path/path.dart' as Path;
 import 'package:reuse_app/Home_Screen.dart';
 
 class MyProfile extends StatefulWidget {
-  TextEditingController _controller;
   static String id = 'MyProfile';
 
   @override
@@ -14,12 +17,21 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
-  final myController = TextEditingController();
+  final myControllerName = TextEditingController();
+  final myControllerEmail = TextEditingController();
+  final myControllerCity = TextEditingController();
+  final myControllerPhone = TextEditingController();
+  TextEditingController displayNameController = TextEditingController();
+  TextEditingController displaycityController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    myController.dispose();
+    myControllerName.dispose();
+    myControllerEmail.dispose();
+    myControllerCity.dispose();
+    myControllerPhone.dispose();
+
     super.dispose();
   }
 
@@ -27,9 +39,52 @@ class _MyProfileState extends State<MyProfile> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User loggedUser;
   String _uid = FirebaseAuth.instance.currentUser.uid;
+  File _image;
+  bool isLoading;
+  String imageUrl;
+  String message;
+  final picker = ImagePicker();
+  firebase_Storage.Reference ref;
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        maxHeight: 400,
+        maxWidth: 400,
+        imageQuality: 50);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadFile() async {
+    //file compression
+    ref = firebase_Storage.FirebaseStorage.instance
+        .ref()
+        .child('images/${Path.basename(_image.path)}');
+    await ref.putFile(_image).whenComplete(() async {
+      String url = await ref.getDownloadURL();
+      setState(() {
+        imageUrl = url;
+      });
+    });
+  }
+
+  String usernewname;
+  String usernewemail;
+  String usernewphone;
+  String usernewCity;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body:
             profileView() // This trailing comma makes auto-formatting nicer for build methods.
         );
@@ -46,6 +101,7 @@ class _MyProfileState extends State<MyProfile> {
             final DocumentSnapshot document = snapshot.data.docs.single;
             final username = document.data()['Full_Name'];
             final useremail = document.data()['email'];
+            final userimage = document.data()['imageURL'];
             final userphone = document.data()['Phone_Number'];
             final userCity = document.data()['City'];
             return Column(children: <Widget>[
@@ -84,16 +140,26 @@ class _MyProfileState extends State<MyProfile> {
                 child: Stack(
                   children: <Widget>[
                     CircleAvatar(
-                      radius: 70,
-                      child: ClipOval(
-                        child: Image.asset(
-                          'images/personimage.png',
-                          height: 150,
-                          color: Colors.white,
-                          width: 150,
-                          fit: BoxFit.cover,
+                        radius: 70,
+                        child:_image==null? ClipOval(
+                          child: Image(
+                            image: AssetImage('images/personimage.png'),
+                            height: 150,
+                            width: 150,
+                            color: Colors.white,
+                            fit: BoxFit.cover,
+                          ),
+                        ):ClipOval(
+                          child: Flexible(
+                            child: Container(
+                              margin: EdgeInsets.all(3.0),
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: FileImage(_image),
+                                      fit: BoxFit.cover)),
+                            ),
+                          ),
                         ),
-                      ),
                     ),
                     Positioned(
                         bottom: 1,
@@ -101,9 +167,12 @@ class _MyProfileState extends State<MyProfile> {
                         child: Container(
                           height: 40,
                           width: 40,
-                          child: Icon(
-                            Icons.add_a_photo,
-                            color: Colors.white,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.add_a_photo,
+                              color: Colors.white,
+                            ),
+                            onPressed: getImage,
                           ),
                           decoration: BoxDecoration(
                               color: Colors.teal,
@@ -131,35 +200,27 @@ class _MyProfileState extends State<MyProfile> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 25, 20, 4),
                       child: Container(
-                        height: 60,
+                        height: 70,
                         child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: Colors.teal,
-                                      size: 20,
-                                    ),
-                                    onPressed: () {
-                                      TextField(
-                                        controller: myController,
-                                      );
-                                    },
-                                  ),
-                                  Text(
-                                    username,
-                                    style: TextStyle(
-                                        color: Colors.white70, fontSize: 20),
-                                  ),
-                                ]),
-                          ),
-                        ),
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                  textAlign: TextAlign.right,
+                                  controller: myControllerName,
+                                  decoration: InputDecoration(
+                                      hintText: username,
+                                      hintStyle: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 20,
+                                      )),
+                                  onChanged: (String value) async {
+                                    setState(() {
+                                      usernewname = value;
+                                    });
+                                    return usernewname;
+                                  }),
+                            )),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                             border:
@@ -173,13 +234,22 @@ class _MyProfileState extends State<MyProfile> {
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              useremail,
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 20),
-                            ),
-                          ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                  textAlign: TextAlign.right,
+                                  controller: myControllerCity,
+                                  decoration: InputDecoration(
+                                      hintText: userCity,
+                                      hintStyle: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 20,
+                                      )),
+                                  onChanged: (String value) async {
+                                    setState(() {
+                                      usernewCity = value;
+                                    });
+                                    return usernewCity;
+                                  })),
                         ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -190,17 +260,26 @@ class _MyProfileState extends State<MyProfile> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 5, 20, 4),
                       child: Container(
-                        height: 60,
+                        height: 70,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              userphone,
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 20),
-                            ),
-                          ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                  textAlign: TextAlign.right,
+                                  controller: myControllerEmail,
+                                  decoration: InputDecoration(
+                                      hintText: useremail,
+                                      hintStyle: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 20,
+                                      )),
+                                  onChanged: (String value) async {
+                                    setState(() {
+                                      usernewemail = value;
+                                    });
+                                    return usernewemail;
+                                  })),
                         ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -211,17 +290,26 @@ class _MyProfileState extends State<MyProfile> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 5, 20, 4),
                       child: Container(
-                        height: 60,
+                        height: 70,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              userCity,
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 20),
-                            ),
-                          ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                  textAlign: TextAlign.right,
+                                  controller: myControllerPhone,
+                                  decoration: InputDecoration(
+                                      hintText: userphone,
+                                      hintStyle: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 20,
+                                      )),
+                                  onChanged: (String value) async {
+                                    setState(() {
+                                      usernewphone = value;
+                                    });
+                                    return usernewphone;
+                                  })),
                         ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -236,12 +324,40 @@ class _MyProfileState extends State<MyProfile> {
                           height: 70,
                           width: 200,
                           child: Align(
-                            child: Text(
-                              'حفظ',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold),
+                            child: TextButton(
+                              child: Text(
+                                'حفظ',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () async {
+                                _firestore
+                                    .collection('users')
+                                    .doc(this._uid)
+                                    .update(({
+                                      'Full_Name': usernewname != null? this.usernewname:username,
+                                      'City':usernewCity != null? this.usernewCity:userCity,
+                                      'Phone_Number': usernewphone !=null? this.usernewphone:userphone,
+                                      'email':usernewemail !=null? this.usernewemail:useremail
+                                    })).whenComplete(() =>
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                      content: Text('تم تحديث البيانات'),
+                                    ))
+                                );
+                                if(imageUrl != null){
+                                  _firestore.collection('users').doc(this._uid).set({
+                                    'imageUrl': imageUrl
+                                  },SetOptions(merge: true));
+                                }
+
+                                // await _firestore
+                                //     .collection('users')
+                                //     .doc(this._uid)
+                                //     .set({'displaypicture': imageUrl});
+                                // SetOptions(merge: true);
+                              },
                             ),
                           ),
                           decoration: BoxDecoration(

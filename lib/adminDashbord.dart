@@ -316,7 +316,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': false
                                         }).catchError((e) => print(e));
-                                        Scaffold.of(context)
+                                        ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                           content: Text('تم حظر المستخدم'),
                                         ));
@@ -329,7 +329,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             .update({
                                           'In-active': true
                                         }).catchError((e) => print(e));
-                                        Scaffold.of(context)
+                                        ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                           content:
                                               Text('تم رفع الحظر المستخدم'),
