@@ -101,7 +101,7 @@ class _MyProfileState extends State<MyProfile> {
             final DocumentSnapshot document = snapshot.data.docs.single;
             final username = document.data()['Full_Name'];
             final useremail = document.data()['email'];
-            final userimage = document.data()['imageURL'];
+            final userimage = document.data()['imageUrl'];
             final userphone = document.data()['Phone_Number'];
             final userCity = document.data()['City'];
             return Column(children: <Widget>[
@@ -140,26 +140,28 @@ class _MyProfileState extends State<MyProfile> {
                 child: Stack(
                   children: <Widget>[
                     CircleAvatar(
-                        radius: 70,
-                        child:_image==null? ClipOval(
-                          child: Image(
-                            image: AssetImage('images/personimage.png'),
-                            height: 150,
-                            width: 150,
-                            color: Colors.white,
-                            fit: BoxFit.cover,
-                          ),
-                        ):ClipOval(
-                          child: Flexible(
-                            child: Container(
-                              margin: EdgeInsets.all(3.0),
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: FileImage(_image),
-                                      fit: BoxFit.cover)),
+                      radius: 70,
+                      child: userimage == 'images/personimage.png'
+                          ? ClipOval(
+                              child: Image(
+                                image: AssetImage('images/personimage.png'),
+                                height: 150,
+                                width: 150,
+                                color: Colors.white,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : ClipOval(
+                              child: Flexible(
+                                child: Container(
+                                  margin: EdgeInsets.all(3.0),
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: NetworkImage(userimage),
+                                          fit: BoxFit.cover)),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
                     ),
                     Positioned(
                         bottom: 1,
@@ -337,19 +339,30 @@ class _MyProfileState extends State<MyProfile> {
                                     .collection('users')
                                     .doc(this._uid)
                                     .update(({
-                                      'Full_Name': usernewname != null? this.usernewname:username,
-                                      'City':usernewCity != null? this.usernewCity:userCity,
-                                      'Phone_Number': usernewphone !=null? this.usernewphone:userphone,
-                                      'email':usernewemail !=null? this.usernewemail:useremail
-                                    })).whenComplete(() =>
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                      content: Text('تم تحديث البيانات'),
-                                    ))
-                                );
-                                if(imageUrl != null){
-                                  _firestore.collection('users').doc(this._uid).set({
-                                    'imageUrl': imageUrl
-                                  },SetOptions(merge: true));
+                                      'Full_Name': usernewname != null
+                                          ? this.usernewname
+                                          : username,
+                                      'City': usernewCity != null
+                                          ? this.usernewCity
+                                          : userCity,
+                                      'Phone_Number': usernewphone != null
+                                          ? this.usernewphone
+                                          : userphone,
+                                      'email': usernewemail != null
+                                          ? this.usernewemail
+                                          : useremail
+                                    }))
+                                    .whenComplete(() =>
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text('تم تحديث البيانات'),
+                                        )));
+                                if (imageUrl != null) {
+                                  _firestore
+                                      .collection('users')
+                                      .doc(this._uid)
+                                      .set({'imageUrl': imageUrl},
+                                          SetOptions(merge: true));
                                 }
 
                                 // await _firestore

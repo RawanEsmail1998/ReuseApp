@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Database {
   CollectionReference userAccount =
       FirebaseFirestore.instance.collection('users');
-  Future<void> userSetup(String name, String phone, String city, String email) async {
+  Future<void> userSetup(
+      String name, String phone, String city, String email) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     String uid = auth.currentUser.uid.toString();
     await userAccount.doc(uid).set({
@@ -13,14 +14,15 @@ class Database {
       'Phone_Number': phone,
       'City': city,
       'uid': uid,
+      'imageUrl': 'images/personimage.png',
       'email': email,
       'role': 'normal user',
-      'In-active':true,
+      'In-active': true,
     });
   }
 
 // get account stream
-  Stream<QuerySnapshot> get account{
+  Stream<QuerySnapshot> get account {
     return userAccount.snapshots();
   }
 }

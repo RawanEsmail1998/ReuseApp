@@ -29,6 +29,26 @@ class _AllmessagesState extends State<Allmessages> {
     });
   }
 
+  String Senderimage;
+
+  getSenderimage(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        Senderimage = value.data()['imageUrl'];
+      });
+    });
+  }
+
+  String Recieverimage;
+
+  getReciverimage(String id) async {
+    await users.doc(id).get().then((value) {
+      setState(() {
+        Recieverimage = value.data()['imageUrl'];
+      });
+    });
+  }
+
   getReceiverName(String id) async {
     await users.doc(id).get().then((value) {
       setState(() {
@@ -65,6 +85,8 @@ class _AllmessagesState extends State<Allmessages> {
                         // is the sender me ?
                         getReceiverName(theReceiver);
                         getSenderName(theSender);
+                        getReciverimage(theReceiver);
+                        getSenderimage(theSender);
                         bool isMe = _uid == theSender ? true : false;
 
                         return InkWell(
@@ -98,12 +120,12 @@ class _AllmessagesState extends State<Allmessages> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                            CrossAxisAlignment.center,
                                         children: [
                                           Text(
                                             isMe
-                                                ? ';$receiverName'
-                                                : ';$senderName',
+                                                ? ';$receiverName  '
+                                                : ';$senderName  ',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 20,
@@ -119,8 +141,9 @@ class _AllmessagesState extends State<Allmessages> {
                                         ]),
                                     CircleAvatar(
                                       backgroundColor: Colors.white,
-                                      backgroundImage:
-                                          AssetImage('images/personimage.png'),
+                                      backgroundImage: isMe
+                                          ? NetworkImage(Recieverimage)
+                                          : NetworkImage(Senderimage),
                                       radius: 28,
                                     ),
                                   ]),
